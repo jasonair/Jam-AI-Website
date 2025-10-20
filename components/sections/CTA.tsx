@@ -39,7 +39,7 @@ export default function CTA() {
               <Button
                 size="lg"
                 variant="outline"
-                className="min-w-[220px] border-white text-white hover:bg-white/10"
+                className="min-w-[220px] border-2 border-white text-white hover:bg-white/10"
               >
                 Start Free Trial
               </Button>

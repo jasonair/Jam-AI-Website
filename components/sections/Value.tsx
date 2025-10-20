@@ -21,7 +21,7 @@ const values = [
   {
     icon: Lock,
     title: 'Own your work',
-    description: 'Local-first, private by default. Export .jam files, pick light or dark mode, and keep control of your data.',
+    description: 'Your data stays yours. Choose light or dark mode, and maintain full control over your workspace and conversations.',
   },
 ];
 

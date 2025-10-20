@@ -10,6 +10,11 @@ export default function Hero() {
     valueSection?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const scrollToDownload = () => {
+    const ctaSection = document.querySelector('[id*="cta"]');
+    ctaSection?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
       {/* Animated background elements */}
@@ -29,12 +34,12 @@ export default function Hero() {
 
           {/* Subheadline */}
           <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto text-balance">
-            Jam AI maps every conversation into nodes you can branch, connect, and ship from — no more endless scroll.
+            Jam with AI — mapping every conversation into nodes you can branch, explore, and gain insights from. No more endless threads.
           </p>
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            <Button size="lg" className="min-w-[200px]">
+            <Button size="lg" className="min-w-[200px]" onClick={scrollToDownload}>
               Start Free
             </Button>
             <Button 
@@ -49,8 +54,15 @@ export default function Hero() {
 
           {/* Tagline */}
           <p className="text-sm text-gray-500 dark:text-gray-500 pt-4">
-            Works on macOS • Built for creative thinkers • Private by design
+            macOS (M1+) • Built for creative thinkers
           </p>
+
+          {/* Pain Point */}
+          <div className="pt-8 max-w-2xl mx-auto">
+            <p className="text-base text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-xl p-6 border-l-4 border-accent">
+              <span className="font-semibold text-gray-900 dark:text-gray-100">Tired of endless threads?</span> Traditional AI apps like ChatGPT, Claude, and Gemini trap your ideas in long, linear conversations. Jam AI breaks free from the scroll — organize your thoughts spatially, branch ideas, and see the whole picture at once.
+            </p>
+          </div>
 
           {/* Visual representation */}
           <div className="pt-12 animate-slide-up">

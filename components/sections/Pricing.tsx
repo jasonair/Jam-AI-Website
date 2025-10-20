@@ -17,7 +17,7 @@ interface PricingPlan {
 const plans: PricingPlan[] = [
   {
     name: 'Free',
-    tagline: 'Jam with two AIs — just enough to start.',
+    tagline: 'Jam with two AIs — just enough to start building your ideas.',
     price: '$0',
     features: [
       '500 credits / month',
@@ -28,7 +28,7 @@ const plans: PricingPlan[] = [
   },
   {
     name: 'Trial',
-    tagline: 'Full power for your first 7 days.',
+    tagline: 'Full power for your first 7 days to explore everything.',
     price: 'Free',
     period: '7 days',
     features: [
@@ -140,9 +140,12 @@ export default function Pricing() {
         </div>
 
         {/* Additional info */}
-        <div className="mt-12 text-center">
+        <div className="mt-12 text-center space-y-2">
           <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            All paid plans include priority AI processing, private share links, and export tools.
+            All paid plans include priority AI processing and faster response times.
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-500">
+            Compatible with macOS M1 and later. Intel processors are not supported.
           </p>
         </div>
       </Container>
