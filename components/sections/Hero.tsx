@@ -11,19 +11,21 @@ export default function Hero() {
   };
 
   const scrollToDownload = () => {
-    const ctaSection = document.querySelector('[id*="cta"]');
-    ctaSection?.scrollIntoView({ behavior: 'smooth' });
+    const downloadButton = document.querySelector('[data-download-button]');
+    if (downloadButton) {
+      downloadButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 pt-20 sm:pt-24">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/30 dark:bg-blue-900/20 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-200/30 dark:bg-purple-900/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
       </div>
 
-      <Container className="relative z-10">
+      <Container className="relative z-10 mt-8 sm:mt-12">
         <div className="text-center space-y-8 animate-fade-in">
           {/* Headline */}
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-balance">

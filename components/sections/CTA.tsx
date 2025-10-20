@@ -32,6 +32,7 @@ export default function CTA() {
                 size="lg"
                 variant="secondary"
                 className="min-w-[220px] bg-white text-accent hover:bg-gray-100"
+                data-download-button
               >
                 <Download className="mr-2 h-5 w-5" />
                 Download for macOS
