@@ -1,7 +1,10 @@
 import Hero from '@/components/sections/Hero';
-import Value from '@/components/sections/Value';
-import HowItWorks from '@/components/sections/HowItWorks';
+import Problem from '@/components/sections/Problem';
+import Features from '@/components/sections/Features';
 import Team from '@/components/sections/Team';
+import HowItWorks from '@/components/sections/HowItWorks';
+import UseCases from '@/components/sections/UseCases';
+import Value from '@/components/sections/Value';
 import Pricing from '@/components/sections/Pricing';
 import FAQ from '@/components/sections/FAQ';
 import Trust from '@/components/sections/Trust';
@@ -12,9 +15,12 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <Hero />
-      <Value />
-      <HowItWorks />
+      <Problem />
       <Team />
+      <Features />
+      <HowItWorks />
+      <UseCases />
+      <Value />
       <Pricing />
       <FAQ />
       <Trust />

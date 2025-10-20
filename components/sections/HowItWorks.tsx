@@ -1,25 +1,25 @@
-import { MessageSquare, GitBranch, Rocket } from 'lucide-react';
+import { Users, Network, Lightbulb } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 
 const steps = [
   {
     number: '1',
-    icon: MessageSquare,
-    title: 'Jam',
-    description: 'Start with any thought or question. Jam AI turns it into a node.',
+    icon: Users,
+    title: 'Choose Your Team',
+    description: 'Select specialist AI team members based on your project needs. Frontend Dev, UX Designer, Copywriter — pick the expertise you need.',
   },
   {
     number: '2',
-    icon: GitBranch,
-    title: 'Map',
-    description: 'Branch ideas, connect themes, and bring in AI team members to expand each path.',
+    icon: Network,
+    title: 'Work With Your Team',
+    description: 'Chat with each team member in your visual workspace. See all their responses as nodes you can organize, compare, and build upon.',
   },
   {
     number: '3',
-    icon: Rocket,
-    title: 'Ship',
-    description: 'Summarise, export, or share — everything stays organised and editable.',
+    icon: Lightbulb,
+    title: 'Get Better Results',
+    description: 'Multiple expert viewpoints lead to richer solutions. See your ideas evolve with input from specialists across different domains.',
   },
 ];
 
@@ -32,7 +32,7 @@ export default function HowItWorks() {
             How It Works
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            It's chat — but structured, visual, and built for momentum.
+            Chat with your whole team at once. It's that simple.
           </p>
         </div>
 

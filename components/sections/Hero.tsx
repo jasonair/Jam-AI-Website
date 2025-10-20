@@ -18,25 +18,25 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 pt-20 sm:pt-24">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/30 dark:bg-blue-900/20 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-200/30 dark:bg-purple-900/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
       </div>
 
-      <Container className="relative z-10 mt-8 sm:mt-12">
+      <Container className="relative z-10">
         <div className="text-center space-y-8 animate-fade-in">
           {/* Headline */}
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-balance">
-            Turn chat into a canvas
+            Build your AI dream team
             <br />
-            <span className="text-accent">your brain can follow.</span>
+            <span className="text-accent">in one shared space.</span>
           </h1>
 
           {/* Subheadline */}
           <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto text-balance">
-            Jam with AI — mapping every conversation into nodes you can branch, explore, and gain insights from. No more endless threads.
+            Name your AI specialists, choose their expertise, and chat with your whole team — all in one visual workspace where you can see everyone's insights at once.
           </p>
 
           {/* CTAs */}
@@ -58,53 +58,6 @@ export default function Hero() {
           <p className="text-sm text-gray-500 dark:text-gray-500 pt-4">
             macOS (M1+) • Built for creative thinkers
           </p>
-
-          {/* Pain Point */}
-          <div className="pt-8 max-w-2xl mx-auto">
-            <p className="text-base text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-xl p-6 border-l-4 border-accent">
-              <span className="font-semibold text-gray-900 dark:text-gray-100">Tired of endless threads?</span> Traditional AI apps like ChatGPT, Claude, and Gemini trap your ideas in long, linear conversations. Jam AI breaks free from the scroll — organize your thoughts spatially, branch ideas, and see the whole picture at once.
-            </p>
-          </div>
-
-          {/* Visual representation */}
-          <div className="pt-12 animate-slide-up">
-            <div className="relative max-w-4xl mx-auto">
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700">
-                {/* Mind map visualization */}
-                <div className="space-y-6">
-                  <div className="flex items-center justify-center gap-4">
-                    <div className="w-32 h-16 bg-accent/10 border-2 border-accent rounded-lg flex items-center justify-center text-sm font-medium">
-                      Chat Message
-                    </div>
-                    <div className="text-2xl text-accent">→</div>
-                    <div className="w-32 h-16 bg-accent border-2 border-accent rounded-lg flex items-center justify-center text-sm font-medium text-white">
-                      Node
-                    </div>
-                  </div>
-                  <div className="flex items-start justify-center gap-8">
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="w-2 h-12 bg-accent/30" />
-                      <div className="w-24 h-12 bg-blue-100 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-700 rounded-lg flex items-center justify-center text-xs">
-                        Branch 1
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="w-2 h-12 bg-accent/30" />
-                      <div className="w-24 h-12 bg-purple-100 dark:bg-purple-900/30 border border-purple-300 dark:border-purple-700 rounded-lg flex items-center justify-center text-xs">
-                        Branch 2
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="w-2 h-12 bg-accent/30" />
-                      <div className="w-24 h-12 bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700 rounded-lg flex items-center justify-center text-xs">
-                        Branch 3
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </Container>
     </section>

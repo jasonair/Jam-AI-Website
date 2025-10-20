@@ -1,27 +1,27 @@
-import { Network, Users, Zap, Lock } from 'lucide-react';
+import { Users, Brain, Network, Lightbulb } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 
 const values = [
   {
-    icon: Network,
-    title: 'Map your thinking',
-    description: 'Conversations become connected nodes you can see at once — a visual trail of your ideas.',
-  },
-  {
     icon: Users,
-    title: 'Build your AI team',
-    description: 'Choose from specialist AI team members with different experience levels. Work like you already do — just with infinite collaborators.',
+    title: 'Name your specialists',
+    description: 'Give each AI team member a unique name to keep track of who you\'re working with. Choose from 140+ roles and optionally specialize by industry.',
   },
   {
-    icon: Zap,
-    title: 'Stay in flow',
-    description: 'No clutter, no endless threads. Just a clean, visual workspace that keeps up with your pace of thought.',
+    icon: Brain,
+    title: 'Multiple perspectives',
+    description: 'Different team members bring different viewpoints. See your challenges from every angle and discover solutions you wouldn\'t find alone.',
   },
   {
-    icon: Lock,
-    title: 'Own your work',
-    description: 'Your data stays yours. Choose light or dark mode, and maintain full control over your workspace and conversations.',
+    icon: Network,
+    title: 'All in one workspace',
+    description: 'Chat with your entire team in a shared visual canvas. Drag, organize, and compare responses from different experts side by side.',
+  },
+  {
+    icon: Lightbulb,
+    title: 'Customize expertise',
+    description: 'Choose experience levels from Junior to Expert. Specialize roles by industry — create a Healthcare Software Engineer or Finance Marketing Strategist.',
   },
 ];
 
