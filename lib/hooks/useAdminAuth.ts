@@ -8,6 +8,7 @@ import {
   User
 } from 'firebase/auth';
 import { auth } from '../firebase';
+import { isAdmin as checkIsAdmin } from '../adminStore';
 
 export interface AdminAuthState {
   user: User | null;
@@ -29,9 +30,8 @@ export function useAdminAuth() {
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Check if user has admin claim
-        const tokenResult = await user.getIdTokenResult();
-        const isAdmin = tokenResult.claims.admin === true;
+        // Check if user is admin in Firestore
+        const isAdmin = await checkIsAdmin(user.uid);
         
         setAuthState({
           user,
@@ -57,9 +57,8 @@ export function useAdminAuth() {
       setAuthState(prev => ({ ...prev, loading: true, error: null }));
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       
-      // Check admin claim
-      const tokenResult = await userCredential.user.getIdTokenResult();
-      const isAdmin = tokenResult.claims.admin === true;
+      // Check admin status in Firestore
+      const isAdmin = await checkIsAdmin(userCredential.user.uid);
       
       if (!isAdmin) {
         await firebaseSignOut(auth);
