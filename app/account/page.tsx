@@ -1,214 +1,341 @@
-import { CreditCard, Users, Settings, TrendingUp } from 'lucide-react';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/contexts/AuthContext';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
+import { 
+  User as UserIcon, 
+  FileText, 
+  MessageSquare, 
+  GitBranch, 
+  Users, 
+  Maximize2,
+  LogOut
+} from 'lucide-react';
 
 export default function AccountPage() {
-  // Mock data - would come from Firebase/Stripe in production
-  const currentPlan = {
-    name: 'Trial',
-    tagline: 'Full power for your first 7 days.',
-    creditsUsed: 450,
-    creditsTotal: 1000,
-    teamSlotsUsed: 2,
-    teamSlotsTotal: 3,
-    daysRemaining: 5,
+  const router = useRouter();
+  const { user, userProfile, loading, signOut, refreshUserProfile } = useAuth();
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [isChangingPlan, setIsChangingPlan] = useState(false);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      console.log('No user found, redirecting to signin...');
+      router.push('/auth/signin');
+    }
+  }, [loading, user, router]);
+
+  useEffect(() => {
+    // Refresh profile on mount
+    if (user) {
+      console.log('User found, fetching profile...', user.email);
+      refreshUserProfile();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  if (loading || !userProfile || !userProfile.creditsTotal) {
+    return (
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Loading your account...</p>
+          {!loading && !userProfile && (
+            <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                <strong>Tip:</strong> If this page is stuck loading, please ensure:
+              </p>
+              <ul className="text-xs text-left text-yellow-700 dark:text-yellow-300 mt-2 space-y-1 ml-4">
+                <li>• Firebase credentials are set in .env.local</li>
+                <li>• You're signed in (try signing out and back in)</li>
+                <li>• Check the browser console for errors</li>
+              </ul>
+              <button
+                onClick={() => router.push('/')}
+                className="mt-4 px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors"
+              >
+                Go to Home
+              </button>
+            </div>
+          )}
+        </div>
+      </main>
+    );
+  }
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push('/');
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   };
 
-  const creditsPercentage = (currentPlan.creditsUsed / currentPlan.creditsTotal) * 100;
+  const handlePlanSelect = (plan: string) => {
+    setSelectedPlan(plan);
+    // Will integrate with Stripe later
+    console.log('Selected plan:', plan);
+  };
+
+  // Calculate credits info with safe defaults
+  const creditsAvailable = (userProfile.creditsTotal || 0) - (userProfile.creditsUsed || 0);
+  const creditsPercentage = userProfile.creditsTotal 
+    ? ((userProfile.creditsUsed || 0) / userProfile.creditsTotal) * 100 
+    : 0;
+
+  // Calculate trial info if applicable
+  const trialDaysRemaining = userProfile.trialEndDate 
+    ? Math.ceil((new Date(userProfile.trialEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    : null;
+
+  // Usage start date
+  const usageStartDate = new Date(userProfile.createdAt || Date.now()).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
+  // Plans configuration
+  const currentPlan = userProfile.plan || 'trial';
+  const plans = [
+    {
+      id: 'trial',
+      name: 'Trial',
+      credits: 1000,
+      teamMembers: 3,
+      features: ['All experience levels'],
+      isCurrent: currentPlan === 'trial',
+    },
+    {
+      id: 'free',
+      name: 'Free',
+      credits: 500,
+      teamMembers: 2,
+      features: ['Junior & Intermediate'],
+      isCurrent: currentPlan === 'free',
+    },
+    {
+      id: 'premium',
+      name: 'Premium',
+      credits: 5000,
+      teamMembers: 5,
+      features: ['All experience levels'],
+      isCurrent: currentPlan === 'premium',
+    },
+    {
+      id: 'pro',
+      name: 'Pro',
+      credits: 20000,
+      teamMembers: 10,
+      features: ['All experience levels'],
+      isCurrent: currentPlan === 'pro',
+    },
+  ];
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Section>
         <Container size="md">
+          {/* Header */}
           <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Account Dashboard</h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Manage your plan, credits, and preferences
-            </p>
+            <h1 className="text-3xl font-bold mb-2">Account Settings</h1>
           </div>
 
           <div className="space-y-6">
-            {/* Current Plan Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-2 border-accent shadow-lg">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <h2 className="text-2xl font-bold">{currentPlan.name}</h2>
-                    <span className="px-3 py-1 bg-accent/10 text-accent text-sm font-semibold rounded-full">
-                      Current Plan
-                    </span>
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {currentPlan.tagline}
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-                    {currentPlan.daysRemaining} days remaining in trial
-                  </p>
-                </div>
-                <Button variant="primary">Upgrade Plan</Button>
-              </div>
-
-              {/* Credits Usage */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Credits used this month
-                  </span>
-                  <span className="text-sm font-semibold">
-                    {currentPlan.creditsUsed.toLocaleString()} / {currentPlan.creditsTotal.toLocaleString()}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-                  <div
-                    className="bg-accent h-full rounded-full transition-all duration-500"
-                    style={{ width: `${creditsPercentage}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Team Slots */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    AI Team Members
-                  </span>
-                  <span className="text-sm font-semibold">
-                    {currentPlan.teamSlotsUsed} of {currentPlan.teamSlotsTotal} used
-                  </span>
-                </div>
-                <div className="flex gap-2">
-                  {Array.from({ length: currentPlan.teamSlotsTotal }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`flex-1 h-3 rounded-full ${
-                        i < currentPlan.teamSlotsUsed
-                          ? 'bg-accent'
-                          : 'bg-gray-200 dark:bg-gray-700'
-                      }`}
+            {/* User Profile Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-6">
+                {/* Avatar */}
+                <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                  {userProfile.photoURL ? (
+                    <img
+                      src={userProfile.photoURL}
+                      alt={userProfile.displayName}
+                      className="w-full h-full rounded-full object-cover"
                     />
-                  ))}
+                  ) : (
+                    <UserIcon className="w-12 h-12 text-white" />
+                  )}
+                </div>
+
+                {/* User Info */}
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold mb-1">{userProfile.displayName}</h2>
+                  <p className="text-gray-600 dark:text-gray-400 mb-2">{userProfile.email}</p>
+                  <span className="inline-flex items-center px-3 py-1 bg-orange-500 text-white text-sm font-semibold rounded-md">
+                    ⭐ {userProfile.plan ? userProfile.plan.charAt(0).toUpperCase() + userProfile.plan.slice(1) : 'Trial'}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Quick Actions Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Billing Management */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:border-accent transition-colors duration-200">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <CreditCard className="w-6 h-6 text-accent" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold mb-2">Manage Billing</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      Update payment methods and view invoices
-                    </p>
-                    <Button variant="outline" size="sm">
-                      Open Stripe Portal
-                    </Button>
-                  </div>
+            {/* Credits Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-bold mb-6">Credits</h2>
+
+              {/* Credits Display */}
+              <div className="mb-4">
+                <div className="flex items-baseline gap-2 mb-2">
+                  <span className="text-4xl font-bold">
+                    {creditsAvailable.toLocaleString()} / {userProfile.creditsTotal.toLocaleString()}
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">available</span>
+                  <span className="ml-auto text-gray-600 dark:text-gray-400">
+                    {userProfile.creditsUsed || 0} used
+                  </span>
                 </div>
-              </div>
 
-              {/* Usage Stats */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:border-accent transition-colors duration-200">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <TrendingUp className="w-6 h-6 text-purple-500" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold mb-2">Usage Stats</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      View detailed analytics and insights
-                    </p>
-                    <Button variant="outline" size="sm">
-                      View Analytics
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Team Management */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:border-accent transition-colors duration-200">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Users className="w-6 h-6 text-green-500" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold mb-2">AI Team Members</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      Configure your AI team and roles
-                    </p>
-                    <Button variant="outline" size="sm">
-                      Manage Team
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Preferences */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:border-accent transition-colors duration-200">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Settings className="w-6 h-6 text-orange-500" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold mb-2">Preferences</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      Theme, data settings, and more
-                    </p>
-                    <Button variant="outline" size="sm">
-                      Edit Settings
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Theme Preferences */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold mb-4">Theme Preferences</h3>
-              <div className="flex gap-4">
-                <button className="flex-1 p-4 border-2 border-accent bg-accent/5 rounded-lg text-center font-medium hover:bg-accent/10 transition-colors duration-200">
-                  Light
-                </button>
-                <button className="flex-1 p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-center font-medium hover:border-accent transition-colors duration-200">
-                  Dark
-                </button>
-                <button className="flex-1 p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-center font-medium hover:border-accent transition-colors duration-200">
-                  System
-                </button>
-              </div>
-            </div>
-
-            {/* Data Controls */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold mb-4">Data & Privacy</h3>
-              <div className="space-y-4">
-                <label className="flex items-center justify-between cursor-pointer">
-                  <div>
-                    <p className="font-medium">Analytics opt-out</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Disable anonymous usage analytics
-                    </p>
-                  </div>
-                  <input
-                    type="checkbox"
-                    className="w-5 h-5 text-accent rounded focus:ring-accent"
+                {/* Progress Bar */}
+                <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-green-500 transition-all duration-500"
+                    style={{ width: `${100 - creditsPercentage}%` }}
                   />
-                </label>
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <Button variant="outline" size="sm">
-                    Export My Data
-                  </Button>
+                </div>
+              </div>
+
+              {/* Usage Info */}
+              <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                <span>Usage since {usageStartDate}</span>
+                {trialDaysRemaining !== null && (
+                  <span>Trial ends in {trialDaysRemaining} days ({new Date(userProfile.trialEndDate!).toLocaleDateString()})</span>
+                )}
+              </div>
+            </div>
+
+            {/* Plans Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-bold mb-6">Plans</h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {plans.map((plan) => (
+                  <div
+                    key={plan.id}
+                    className={`p-6 rounded-xl border-2 transition-all duration-200 flex flex-col ${
+                      plan.isCurrent
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                        : 'border-gray-200 dark:border-gray-700'
+                    }`}
+                  >
+                    {/* Plan Header */}
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-bold">{plan.name}</h3>
+                      {plan.isCurrent && (
+                        <span className="px-3 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
+                          Your Current Plan
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Plan Details */}
+                    <div className="mb-4 flex-grow">
+                      <p className="text-3xl font-bold mb-2">
+                        {plan.credits.toLocaleString()}{' '}
+                        <span className="text-base font-normal text-gray-600 dark:text-gray-400">
+                          credits/month
+                        </span>
+                      </p>
+                      <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                        <li>• {plan.teamMembers} AI team members</li>
+                        {plan.features.map((feature, index) => (
+                          <li key={index}>• {feature}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Action Button */}
+                    {!plan.isCurrent && (
+                      <Button
+                        variant="primary"
+                        className="w-full mt-auto"
+                        onClick={() => handlePlanSelect(plan.id)}
+                      >
+                        Select
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Account Activity Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-bold mb-4">Account Activity</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">Your JamAI usage this month</p>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                {/* Nodes Created */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
+                    <FileText className="w-5 h-5" />
+                    <span className="text-sm">Nodes Created</span>
+                  </div>
+                  <p className="text-4xl font-bold">{userProfile.usage?.nodesCreated || 0}</p>
+                </div>
+
+                {/* AI Messages */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
+                    <MessageSquare className="w-5 h-5" />
+                    <span className="text-sm">AI Messages</span>
+                  </div>
+                  <p className="text-4xl font-bold">{userProfile.usage?.aiMessages || 0}</p>
+                </div>
+
+                {/* Notes Created */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
+                    <FileText className="w-5 h-5" />
+                    <span className="text-sm">Notes Created</span>
+                  </div>
+                  <p className="text-4xl font-bold">{userProfile.usage?.notesCreated || 0}</p>
+                </div>
+
+                {/* Child Nodes */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
+                    <GitBranch className="w-5 h-5" />
+                    <span className="text-sm">Child Nodes</span>
+                  </div>
+                  <p className="text-4xl font-bold">{userProfile.usage?.childNodes || 0}</p>
+                </div>
+
+                {/* Expand Actions */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
+                    <Maximize2 className="w-5 h-5" />
+                    <span className="text-sm">Expand Actions</span>
+                  </div>
+                  <p className="text-4xl font-bold">{userProfile.usage?.expandActions || 0}</p>
+                </div>
+
+                {/* AI Team Members */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
+                    <Users className="w-5 h-5" />
+                    <span className="text-sm">AI Team Members</span>
+                  </div>
+                  <p className="text-4xl font-bold">{userProfile.teamMembers || 0}</p>
                 </div>
               </div>
             </div>
+
+            {/* Sign Out Button */}
+            <button
+              onClick={handleSignOut}
+              className="w-full p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center justify-center gap-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200"
+            >
+              <LogOut className="w-5 h-5" />
+              <span className="font-medium">Sign Out</span>
+            </button>
           </div>
 
-          {/* Back to home */}
+          {/* Back to Home */}
           <div className="mt-8 text-center">
             <a
               href="/"

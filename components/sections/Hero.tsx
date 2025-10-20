@@ -1,10 +1,15 @@
 'use client';
 
 import { ArrowDown } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/contexts/AuthContext';
 import Button from '@/components/ui/Button';
 import Container from '@/components/ui/Container';
 
 export default function Hero() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
+
   const scrollToLearnMore = () => {
     const valueSection = document.getElementById('value-section');
     valueSection?.scrollIntoView({ behavior: 'smooth' });
@@ -14,6 +19,14 @@ export default function Hero() {
     const downloadButton = document.querySelector('[data-download-button]');
     if (downloadButton) {
       downloadButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  const handleGetStarted = () => {
+    if (user) {
+      router.push('/account');
+    } else {
+      router.push('/auth/signup');
     }
   };
 
@@ -41,17 +54,37 @@ export default function Hero() {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            <Button size="lg" className="min-w-[200px]" onClick={scrollToDownload}>
-              Start Free
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="min-w-[200px]"
-              onClick={scrollToLearnMore}
-            >
-              Learn More <ArrowDown className="ml-2 h-5 w-5" />
-            </Button>
+            {!loading && (
+              <>
+                <Button 
+                  size="lg" 
+                  className="min-w-[200px]" 
+                  onClick={handleGetStarted}
+                >
+                  {user ? 'Go to Account' : 'Start Free Trial'}
+                </Button>
+                {!user && (
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="min-w-[200px]"
+                    onClick={() => router.push('/pricing')}
+                  >
+                    View Pricing
+                  </Button>
+                )}
+                {user && (
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="min-w-[200px]"
+                    onClick={scrollToLearnMore}
+                  >
+                    Learn More <ArrowDown className="ml-2 h-5 w-5" />
+                  </Button>
+                )}
+              </>
+            )}
           </div>
 
           {/* Tagline */}
