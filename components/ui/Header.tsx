@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import Button from './Button';
+import ThemeToggle from './ThemeToggle';
 import { Menu, X, User } from 'lucide-react';
 
 export default function Header() {
@@ -36,6 +37,7 @@ export default function Header() {
             >
               Pricing
             </Link>
+            <ThemeToggle />
             
             {!loading && (
               <>
@@ -92,6 +94,9 @@ export default function Header() {
             >
               Pricing
             </Link>
+            <div className="flex justify-center py-2">
+              <ThemeToggle />
+            </div>
             
             {!loading && (
               <>
