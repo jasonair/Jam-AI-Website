@@ -14,11 +14,11 @@ interface FAQItem {
 const faqs: FAQItem[] = [
   {
     question: 'What are "credits"?',
-    answer: 'Credits measure how much AI time you use — messages, generations, or analyses. They refresh monthly.',
+    answer: 'Credits measure AI tokens used — each message, generation, or analysis consumes tokens based on length and complexity. They refresh monthly.',
   },
   {
     question: 'Do unused credits roll over?',
-    answer: 'Not yet. Each month brings a fresh batch.',
+    answer: 'No. Each month brings a fresh batch.',
   },
   {
     question: 'Can I cancel anytime?',
@@ -26,7 +26,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: 'Does Jam AI work offline?',
-    answer: 'Core features do. Online models add extra power, but you can still map ideas locally.',
+    answer: 'Not currently, but we plan to add support for local models in the future, which will enable offline functionality.',
   },
   {
     question: 'What platforms are supported?',

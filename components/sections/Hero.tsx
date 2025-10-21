@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import Button from '@/components/ui/Button';
 import Container from '@/components/ui/Container';
+import GridBackground from '@/components/ui/GridBackground';
 
 export default function Hero() {
   const router = useRouter();
@@ -31,14 +32,16 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
-      {/* Animated background elements */}
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
+      {/* Animated background elements - moved outside GridBackground */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/30 dark:bg-blue-900/20 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-200/30 dark:bg-purple-900/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
       </div>
 
-      <Container className="relative z-10">
+      <GridBackground className="min-h-screen flex items-center justify-center w-full" opacity="subtle" variant="dots">
+        <section className="relative w-full">
+          <Container className="relative z-10">
         <div className="text-center space-y-8 animate-fade-in">
           {/* Headline */}
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-balance">
@@ -92,7 +95,9 @@ export default function Hero() {
             macOS (M1+) • Built for creative thinkers
           </p>
         </div>
-      </Container>
-    </section>
+          </Container>
+        </section>
+      </GridBackground>
+    </div>
   );
 }

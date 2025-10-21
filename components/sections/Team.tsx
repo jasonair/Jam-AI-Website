@@ -1,6 +1,6 @@
 'use client';
 
-import { Code, PenTool, Search, ArrowRight, Palette, BarChart3, Megaphone, Database, FileText, Lightbulb } from 'lucide-react';
+import { Code, ArrowRight, Palette, BarChart3, FileText, Brain, Cpu, Users, Megaphone } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
@@ -8,51 +8,67 @@ import Button from '@/components/ui/Button';
 const teamMembers = [
   {
     icon: Code,
+    name: 'Sarah',
     role: 'Frontend Dev',
     description: 'React, Vue, and modern web development',
     color: 'bg-blue-500',
+    level: 'Expert',
   },
   {
-    icon: Database,
+    icon: Cpu,
+    name: 'Marcus',
     role: 'Backend Dev',
     description: 'APIs, databases, and server architecture',
     color: 'bg-indigo-500',
+    level: 'Sr',
   },
   {
     icon: Palette,
+    name: 'Emma',
     role: 'UX Designer',
     description: 'User flows, wireframes, and interfaces',
     color: 'bg-pink-500',
-  },
-  {
-    icon: PenTool,
-    role: 'Copywriter',
-    description: 'Marketing copy, brand voice, and content',
-    color: 'bg-purple-500',
-  },
-  {
-    icon: Search,
-    role: 'Research Analyst',
-    description: 'Market research and data analysis',
-    color: 'bg-green-500',
-  },
-  {
-    icon: BarChart3,
-    role: 'Product Manager',
-    description: 'Strategy, roadmaps, and prioritization',
-    color: 'bg-orange-500',
-  },
-  {
-    icon: Megaphone,
-    role: 'Marketing Strategist',
-    description: 'Campaigns, growth, and positioning',
-    color: 'bg-red-500',
+    level: 'Expert',
   },
   {
     icon: FileText,
-    role: 'Technical Writer',
-    description: 'Documentation, guides, and tutorials',
-    color: 'bg-teal-500',
+    name: 'Alex',
+    role: 'Content Writer',
+    description: 'Creates engaging content for blogs, marketing, documentation, and social media',
+    color: 'bg-purple-500',
+    level: 'Jr',
+  },
+  {
+    icon: BarChart3,
+    name: 'Jordan',
+    role: 'Data Scientist',
+    description: 'Analyzes data, builds models, and extracts insights using statistics and ML',
+    color: 'bg-blue-400',
+    level: 'Expert',
+  },
+  {
+    icon: Brain,
+    name: 'Priya',
+    role: 'AI/ML Engineer',
+    description: 'Develops machine learning models, AI systems, and deploys ML solutions at scale',
+    color: 'bg-blue-300',
+    level: 'Sr',
+  },
+  {
+    icon: Megaphone,
+    name: 'Tyler',
+    role: 'Digital Marketer',
+    description: 'Plans and executes digital marketing campaigns across channels',
+    color: 'bg-orange-400',
+    level: 'Int',
+  },
+  {
+    icon: Users,
+    name: 'Maya',
+    role: 'Co-Founder',
+    description: 'Builds startup from ground up, shares vision, and wears multiple hats',
+    color: 'bg-pink-300',
+    level: 'Expert',
   },
 ];
 
@@ -81,24 +97,36 @@ export default function Team() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-12">
           {teamMembers.map((member, index) => {
             const Icon = member.icon;
+            const levels = ['Jr', 'Int', 'Sr', 'Expert'];
+            const activeLevelIndex = levels.indexOf(member.level);
+            
             return (
               <div
                 key={index}
-                className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 border border-gray-200 dark:border-gray-700 hover:border-accent dark:hover:border-accent transition-all duration-300 hover:shadow-xl"
+                className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 border border-gray-200 dark:border-gray-700 hover:border-accent dark:hover:border-accent transition-all duration-300 hover:shadow-xl flex flex-col"
               >
-                <div className="text-center space-y-3">
-                  <div className={`inline-flex w-14 h-14 ${member.color} rounded-xl items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                <div className="text-center space-y-3 flex-grow flex flex-col">
+                  <div className={`inline-flex w-14 h-14 ${member.color} rounded-xl items-center justify-center group-hover:scale-110 transition-transform duration-300 mx-auto`}>
                     <Icon className="w-7 h-7 text-white" />
                   </div>
-                  <div>
+                  <div className="flex-grow">
+                    <p className="text-sm font-semibold text-accent mb-1">{member.name}</p>
                     <h3 className="text-lg font-semibold mb-1">{member.role}</h3>
                     <p className="text-xs text-gray-600 dark:text-gray-400">{member.description}</p>
                   </div>
-                  <div className="flex items-center justify-center gap-1 text-xs text-gray-500 pt-2">
-                    <span className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">Jr</span>
-                    <span className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">Int</span>
-                    <span className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">Sr</span>
-                    <span className="px-2 py-1 bg-accent text-white rounded text-xs font-medium">Expert</span>
+                  <div className="flex items-center justify-center gap-1 text-xs text-gray-500 pt-2 mt-auto">
+                    {levels.map((level, idx) => (
+                      <span 
+                        key={level}
+                        className={`px-2 py-1 rounded text-xs ${
+                          level === member.level
+                            ? 'bg-accent text-white font-medium' 
+                            : 'bg-gray-200 dark:bg-gray-700'
+                        }`}
+                      >
+                        {level}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>

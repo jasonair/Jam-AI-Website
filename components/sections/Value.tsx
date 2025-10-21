@@ -1,6 +1,7 @@
 import { Users, Brain, Network, Lightbulb } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
+import GridBackground from '@/components/ui/GridBackground';
 
 const values = [
   {
@@ -27,7 +28,8 @@ const values = [
 
 export default function Value() {
   return (
-    <Section id="value-section" className="bg-white dark:bg-gray-950">
+    <GridBackground className="bg-white dark:bg-gray-950" opacity="subtle" variant="dots">
+      <Section id="value-section">
       <Container>
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4">
@@ -59,6 +61,7 @@ export default function Value() {
           })}
         </div>
       </Container>
-    </Section>
+      </Section>
+    </GridBackground>
   );
 }

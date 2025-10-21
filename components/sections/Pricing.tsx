@@ -2,6 +2,7 @@ import { Check } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
+import GridBackground from '@/components/ui/GridBackground';
 
 interface PricingPlan {
   name: string;
@@ -17,11 +18,11 @@ interface PricingPlan {
 const plans: PricingPlan[] = [
   {
     name: 'Free',
-    tagline: 'Jam with two AIs — just enough to start building your ideas.',
+    tagline: 'Jam with three AIs — just enough to start building your ideas.',
     price: '$0',
     features: [
       '500 credits / month',
-      '2 AI team members',
+      '3 AI team members per project',
       'Junior & Intermediate levels',
     ],
     cta: 'Select',
@@ -33,7 +34,7 @@ const plans: PricingPlan[] = [
     period: '7 days',
     features: [
       '1,000 credits / month',
-      '3 AI team members',
+      '10 AI team members per project',
       'All experience levels',
     ],
     cta: 'Your Current Plan',
@@ -41,12 +42,12 @@ const plans: PricingPlan[] = [
   },
   {
     name: 'Premium',
-    tagline: 'Go further with five AIs and deeper credits.',
+    tagline: 'Go further with more AIs and deeper credits.',
     price: '$19',
     period: '/month',
     features: [
       '5,000 credits / month',
-      '5 AI team members',
+      '12 AI team members per project',
       'All experience levels',
     ],
     cta: 'Select',
@@ -59,7 +60,7 @@ const plans: PricingPlan[] = [
     period: '/month',
     features: [
       '20,000 credits / month',
-      '10 AI team members',
+      'Unlimited AI team members per project',
       'All experience levels',
     ],
     cta: 'Select',
@@ -68,7 +69,8 @@ const plans: PricingPlan[] = [
 
 export default function Pricing() {
   return (
-    <Section id="pricing-section" className="bg-gray-50 dark:bg-gray-900">
+    <GridBackground className="bg-gray-50 dark:bg-gray-900" opacity="subtle" fadeEdges>
+      <Section id="pricing-section">
       <Container size="xl">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4">
@@ -149,6 +151,7 @@ export default function Pricing() {
           </p>
         </div>
       </Container>
-    </Section>
+      </Section>
+    </GridBackground>
   );
 }

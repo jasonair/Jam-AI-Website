@@ -1,6 +1,7 @@
 import { ArrowDownRight, Sparkles, MessageCircle, StickyNote } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
+import GridBackground from '@/components/ui/GridBackground';
 
 const features = [
   {
@@ -35,7 +36,8 @@ const features = [
 
 export default function Features() {
   return (
-    <Section className="bg-gray-50 dark:bg-gray-900">
+    <GridBackground className="bg-gray-50 dark:bg-gray-900" opacity="subtle" fadeEdges>
+      <Section>
       <Container>
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4">
@@ -82,6 +84,7 @@ export default function Features() {
           </p>
         </div>
       </Container>
-    </Section>
+      </Section>
+    </GridBackground>
   );
 }

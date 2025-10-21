@@ -33,22 +33,14 @@ export default function Header() {
             {!loading && (
               <>
                 {user ? (
-                  <>
-                    <Link 
-                      href="/account" 
-                      className="text-gray-700 dark:text-gray-300 hover:text-accent transition-colors"
-                    >
-                      Account
-                    </Link>
-                    <Button 
-                      variant="primary" 
-                      size="sm"
-                      onClick={() => router.push('/account')}
-                    >
-                      <User className="w-4 h-4 mr-2" />
-                      Dashboard
-                    </Button>
-                  </>
+                  <Button 
+                    variant="primary" 
+                    size="sm"
+                    onClick={() => router.push('/account')}
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </Button>
                 ) : (
                   <>
                     <Link 
@@ -97,26 +89,17 @@ export default function Header() {
             {!loading && (
               <>
                 {user ? (
-                  <>
-                    <Link 
-                      href="/account" 
-                      className="block py-2 text-gray-700 dark:text-gray-300 hover:text-accent transition-colors"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Account
-                    </Link>
-                    <Button 
-                      variant="primary" 
-                      className="w-full"
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        router.push('/account');
-                      }}
-                    >
-                      <User className="w-4 h-4 mr-2" />
-                      Dashboard
-                    </Button>
-                  </>
+                  <Button 
+                    variant="primary" 
+                    className="w-full"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      router.push('/account');
+                    }}
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </Button>
                 ) : (
                   <>
                     <Link 

@@ -1,6 +1,7 @@
 import { Users, Network, Lightbulb } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
+import GridBackground from '@/components/ui/GridBackground';
 
 const steps = [
   {
@@ -18,14 +19,15 @@ const steps = [
   {
     number: '3',
     icon: Lightbulb,
-    title: 'Get Better Results',
-    description: 'Multiple expert viewpoints lead to richer solutions. See your ideas evolve with input from specialists across different domains.',
+    title: 'See the Bigger Picture',
+    description: 'Multiple expert perspectives help you maintain context and spatial awareness. Never lose track of your ideas — see how everything connects in one visual workspace.',
   },
 ];
 
 export default function HowItWorks() {
   return (
-    <Section className="bg-gray-50 dark:bg-gray-900">
+    <GridBackground className="bg-gray-50 dark:bg-gray-900" opacity="subtle" variant="dots">
+      <Section>
       <Container>
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4">
@@ -72,6 +74,7 @@ export default function HowItWorks() {
           })}
         </div>
       </Container>
-    </Section>
+      </Section>
+    </GridBackground>
   );
 }
