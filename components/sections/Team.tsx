@@ -1,6 +1,6 @@
 'use client';
 
-import { Code, ArrowRight, Palette, BarChart3, FileText, Brain, Cpu, Users, Megaphone } from 'lucide-react';
+import { Code, ArrowRight, Palette, BarChart3, FileText, Brain, Cpu, Users, Megaphone, GraduationCap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
@@ -8,11 +8,19 @@ import Button from '@/components/ui/Button';
 
 const teamMembers = [
   {
-    icon: Code,
-    name: 'Sarah',
-    role: 'Frontend Dev',
-    description: 'React, Vue, and modern web development',
-    color: 'bg-blue-500',
+    icon: Users,
+    name: 'Maya',
+    role: 'Co-Founder',
+    description: 'Builds startup from ground up, shares vision, and wears multiple hats',
+    color: 'bg-pink-300',
+    level: 'Expert',
+  },
+  {
+    icon: GraduationCap,
+    name: 'Dr. Chen',
+    role: 'Homework Tutor',
+    description: 'Helps students with homework across all subjects, explains concepts clearly',
+    color: 'bg-green-500',
     level: 'Expert',
   },
   {
@@ -63,14 +71,6 @@ const teamMembers = [
     color: 'bg-orange-400',
     level: 'Int',
   },
-  {
-    icon: Users,
-    name: 'Maya',
-    role: 'Co-Founder',
-    description: 'Builds startup from ground up, shares vision, and wears multiple hats',
-    color: 'bg-pink-300',
-    level: 'Expert',
-  },
 ];
 
 export default function Team() {
@@ -84,7 +84,10 @@ export default function Team() {
             Meet your AI team
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-            Choose from <span className="font-semibold text-gray-900 dark:text-gray-100">137 specialist roles</span> across 13 categories. Name each team member, pick their experience level, and optionally specialize them by industry — like a Healthcare Software Engineer or Finance Marketing Strategist.
+            Choose from <span className="font-semibold text-gray-900 dark:text-gray-100">137 specialist roles</span> across 13 categories — from developers and designers to <span className="font-semibold text-green-600 dark:text-green-400">teachers and students</span>. Name each team member, pick their experience level, and optionally specialize them by industry.
+          </p>
+          <p className="text-sm text-green-600 dark:text-green-400 mt-3">
+            Perfect for students: Get help with homework, research projects, test prep, and learning any subject with dedicated education roles.
           </p>
           <p className="text-lg text-gray-500 dark:text-gray-500 mt-4">
             4 experience levels: Junior → Intermediate → Senior → Expert (higher levels unlock as you upgrade)

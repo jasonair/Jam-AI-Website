@@ -1,6 +1,6 @@
 'use client';
 
-import { Rocket, BookOpen, Palette, TrendingUp } from 'lucide-react';
+import { Rocket, BookOpen, Palette, TrendingUp, GraduationCap } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 
@@ -13,10 +13,10 @@ const useCases = [
     color: 'bg-blue-500',
   },
   {
-    icon: BookOpen,
-    title: 'Healthcare research',
-    team: ['James (Senior Healthcare Research Analyst)', 'Emma (Expert Data Scientist)', 'Lisa (Intermediate Technical Writer)'],
-    description: 'Work with James to gather medical insights, consult Emma for statistical analysis, and collaborate with Lisa to document your findings.',
+    icon: GraduationCap,
+    title: 'Student homework & research',
+    team: ['Dr. Chen (Expert Math Teacher)', 'Sarah (Senior Homework Tutor)', 'Prof. Lee (Expert Science Teacher)'],
+    description: 'Get help from Dr. Chen with calculus problems, work through assignments with Sarah across any subject, and explore scientific concepts with Prof. Lee — your personal study team.',
     color: 'bg-green-500',
   },
   {

@@ -25,6 +25,10 @@ const faqs: FAQItem[] = [
     answer: 'Absolutely. Manage billing directly in your dashboard — no emails, no friction.',
   },
   {
+    question: 'How is my privacy protected?',
+    answer: 'Your conversations and data are stored locally on your device — we never store your chats on our servers. Jam AI uses Google\'s Gemini API, which does not use your data to train their models. Learn more about Google\'s privacy commitments at <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer" class="text-accent hover:text-accent/80 underline">https://ai.google.dev/gemini-api/terms</a>',
+  },
+  {
     question: 'Does Jam AI work offline?',
     answer: 'Not currently, but we plan to add support for local models in the future, which will enable offline functionality.',
   },
@@ -55,9 +59,7 @@ function FAQAccordion({ faq, isOpen, onClick }: { faq: FAQItem; isOpen: boolean;
           isOpen ? 'max-h-96 pb-6' : 'max-h-0'
         )}
       >
-        <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-          {faq.answer}
-        </p>
+        <p className="text-gray-600 dark:text-gray-400 leading-relaxed" dangerouslySetInnerHTML={{ __html: faq.answer }} />
       </div>
     </div>
   );
