@@ -13,7 +13,9 @@ import {
   GitBranch, 
   Users, 
   Maximize2,
-  LogOut
+  LogOut,
+  CreditCard,
+  Settings
 } from 'lucide-react';
 
 export default function AccountPage() {
@@ -21,6 +23,8 @@ export default function AccountPage() {
   const { user, userProfile, loading, signOut, refreshUserProfile } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [isChangingPlan, setIsChangingPlan] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -78,8 +82,47 @@ export default function AccountPage() {
 
   const handlePlanSelect = (plan: string) => {
     setSelectedPlan(plan);
-    // Will integrate with Stripe later
-    console.log('Selected plan:', plan);
+    // Redirect to pricing page to upgrade
+    router.push(`/pricing`);
+  };
+
+  const handleManageSubscription = async () => {
+    if (!user) return;
+
+    try {
+      setPortalLoading(true);
+      setError(null);
+
+      // Get Firebase auth token
+      const token = await user.getIdToken();
+
+      // Create portal session
+      const response = await fetch('/api/create-portal-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to access billing portal');
+      }
+
+      const { url } = await response.json();
+
+      // Redirect to Stripe Customer Portal
+      if (url) {
+        window.location.href = url;
+      } else {
+        throw new Error('No portal URL received');
+      }
+    } catch (err: any) {
+      console.error('Error accessing billing portal:', err);
+      setError(err.message || 'Failed to access billing portal. Please try again.');
+      setPortalLoading(false);
+    }
   };
 
   // Calculate credits info with safe defaults
@@ -173,6 +216,47 @@ export default function AccountPage() {
                 </div>
               </div>
             </div>
+
+            {/* Subscription Management Section - Only show for paid plans */}
+            {(currentPlan === 'premium' || currentPlan === 'pro') && (
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-xl font-bold mb-1">Subscription Management</h2>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Manage your billing, payment methods, and view invoices
+                    </p>
+                  </div>
+                  <CreditCard className="w-8 h-8 text-gray-400" />
+                </div>
+
+                {error && (
+                  <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+                  </div>
+                )}
+
+                <div className="space-y-4">
+                  <Button
+                    variant="primary"
+                    className="w-full sm:w-auto"
+                    onClick={handleManageSubscription}
+                    disabled={portalLoading}
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    {portalLoading ? 'Loading...' : 'Manage Billing'}
+                  </Button>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    You'll be redirected to our secure billing portal where you can:
+                  </p>
+                  <ul className="text-xs text-gray-500 dark:text-gray-400 space-y-1 ml-4">
+                    <li>• Update payment methods</li>
+                    <li>• View and download invoices</li>
+                    <li>• Cancel or modify your subscription</li>
+                  </ul>
+                </div>
+              </div>
+            )}
 
             {/* Credits Section */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">

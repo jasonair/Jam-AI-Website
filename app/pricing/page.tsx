@@ -7,11 +7,13 @@ import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
 import { Check } from 'lucide-react';
+import { getStripe } from '@/lib/stripe';
 
 export default function PricingPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const plans = [
     {
@@ -77,13 +79,57 @@ export default function PricingPage() {
     },
   ];
 
-  const handleSelectPlan = (planId: string) => {
+  const handleSelectPlan = async (planId: string) => {
+    // Free plans don't require payment
+    if (planId === 'trial' || planId === 'free') {
+      if (!user) {
+        router.push(`/auth/signup?plan=${planId}`);
+      } else {
+        router.push(`/account?upgrade=${planId}`);
+      }
+      return;
+    }
+
+    // Paid plans require authentication and Stripe checkout
     if (!user) {
-      // Redirect to signup with plan parameter
       router.push(`/auth/signup?plan=${planId}`);
-    } else {
-      // Redirect to account page to manage plan
-      router.push(`/account?upgrade=${planId}`);
+      return;
+    }
+
+    try {
+      setLoading(planId);
+      setError(null);
+
+      // Get Firebase auth token
+      const token = await user.getIdToken();
+
+      // Create checkout session
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ planId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+
+      // Redirect to Stripe Checkout using the URL
+      if (url) {
+        window.location.href = url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (err: any) {
+      console.error('Error starting checkout:', err);
+      setError(err.message || 'Failed to start checkout. Please try again.');
+      setLoading(null);
     }
   };
 
@@ -97,6 +143,11 @@ export default function PricingPage() {
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Start with a 7-day trial. No credit card required. Upgrade or downgrade anytime.
             </p>
+            {error && (
+              <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg max-w-md mx-auto">
+                <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+              </div>
+            )}
           </div>
 
           {/* Pricing Cards */}
@@ -145,8 +196,9 @@ export default function PricingPage() {
                   variant={plan.popular ? 'primary' : 'outline'}
                   className="w-full mt-auto"
                   onClick={() => handleSelectPlan(plan.id)}
+                  disabled={loading === plan.id}
                 >
-                  {user ? 'Switch to ' + plan.name : 'Get Started'}
+                  {loading === plan.id ? 'Loading...' : user ? 'Switch to ' + plan.name : 'Get Started'}
                 </Button>
               </div>
             ))}

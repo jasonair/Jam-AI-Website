@@ -1,6 +1,7 @@
 'use client';
 
 import { Code, ArrowRight, Palette, BarChart3, FileText, Brain, Cpu, Users, Megaphone } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
@@ -73,10 +74,7 @@ const teamMembers = [
 ];
 
 export default function Team() {
-  const scrollToPricing = () => {
-    const pricingSection = document.getElementById('pricing-section');
-    pricingSection?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const router = useRouter();
 
   return (
     <Section className="bg-white dark:bg-gray-950">
@@ -86,7 +84,7 @@ export default function Team() {
             Meet your AI team
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-            Choose from <span className="font-semibold text-gray-900 dark:text-gray-100">140+ specialist roles</span> across 13 categories. Name each team member, pick their experience level, and optionally specialize them by industry — like a Healthcare Software Engineer or Finance Marketing Strategist.
+            Choose from <span className="font-semibold text-gray-900 dark:text-gray-100">137 specialist roles</span> across 13 categories. Name each team member, pick their experience level, and optionally specialize them by industry — like a Healthcare Software Engineer or Finance Marketing Strategist.
           </p>
           <p className="text-lg text-gray-500 dark:text-gray-500 mt-4">
             4 experience levels: Junior → Intermediate → Senior → Expert (higher levels unlock as you upgrade)
@@ -151,7 +149,7 @@ export default function Team() {
 
         {/* CTA */}
         <div className="text-center">
-          <Button size="lg" onClick={scrollToPricing}>
+          <Button size="lg" onClick={() => router.push('/roles')}>
             Explore All Roles <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>

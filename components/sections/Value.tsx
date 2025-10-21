@@ -7,7 +7,7 @@ const values = [
   {
     icon: Users,
     title: 'Name your specialists',
-    description: 'Give each AI team member a unique name to keep track of who you\'re working with. Choose from 140+ roles and optionally specialize by industry.',
+    description: 'Give each AI team member a unique name to keep track of who you\'re working with. Choose from 137 specialist roles and optionally specialize by industry.',
   },
   {
     icon: Brain,
