@@ -394,6 +394,16 @@ export default function AdminDashboardPage() {
             </div>
           </div>
         )}
+
+        {/* Back to Home */}
+        <div className="mt-8 text-center pb-8">
+          <a
+            href="/"
+            className="text-accent hover:text-accent-hover font-medium transition-colors duration-200"
+          >
+            ← Back to Home
+          </a>
+        </div>
       </Container>
     </div>
   );

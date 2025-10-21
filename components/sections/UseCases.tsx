@@ -41,10 +41,10 @@ export default function UseCases() {
       <Container>
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4">
-            See your team in action
+            See your Jam AI team in action
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Different projects need different expertise. Build the perfect team for any challenge.
+            Different projects need different expertise. Build the perfect Jam AI team for any challenge.
           </p>
         </div>
 
@@ -90,7 +90,7 @@ export default function UseCases() {
         {/* Additional info */}
         <div className="mt-12 text-center">
           <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Mix and match team members to create the perfect combination for your unique workflow. Every project is different — your AI team should be too.
+            Mix and match Jam AI team members to create the perfect combination for your unique workflow. Every project is different — your AI team should be too.
           </p>
         </div>
       </Container>

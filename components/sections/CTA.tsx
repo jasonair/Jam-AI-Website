@@ -38,7 +38,7 @@ export default function CTA() {
             </h2>
 
             <p className="text-xl sm:text-2xl text-white/90 max-w-2xl mx-auto">
-              Build ideas like you think — in flow, not in threads.
+              Build ideas like you think — in <span className="font-bold text-white">Jam AI</span>, not in threads.
             </p>
 
             {!loading && (

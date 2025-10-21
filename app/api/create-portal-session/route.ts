@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     const userId = decodedToken.uid;
 
     // Get the user's Stripe customer ID from Firestore
-    const subscriptionsSnapshot = await db
+    const subscriptionsSnapshot = await db()
       .collection('subscriptions')
       .where('userId', '==', userId)
       .orderBy('createdAt', 'desc')

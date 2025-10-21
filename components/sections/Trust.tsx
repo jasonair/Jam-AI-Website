@@ -41,7 +41,7 @@ const testimonials = [
 const trustBadges = [
   { icon: Lock, text: 'Private by design' },
   { icon: Shield, text: 'Built with Firebase & Stripe security' },
-  { icon: Heart, text: 'Loved by early creators' },
+  { icon: Heart, text: 'Loved by early Jam AI creators' },
 ];
 
 export default function Trust() {

@@ -14,23 +14,23 @@ Since you've never used Stripe before, here's a simple step-by-step guide to get
 
 ## Step 2: Create Your Products (3 minutes)
 
-### Create Premium Plan ($29/month)
+### Create Pro Plan ($15/month)
 1. Click **Products** in the left menu
 2. Click **+ Add product**
 3. Fill in:
-   - Name: `Premium Plan`
-   - Description: `5,000 credits/month, 12 AI team members`
-   - Pricing → Price: `29.00` USD
+   - Name: `Pro Plan`
+   - Description: `500 credits/month, 12 AI team members`
+   - Pricing → Price: `15.00` USD
    - Billing period: `Monthly`
 4. Click **Save product**
 5. ⚠️ **IMPORTANT**: Copy the **Price ID** (starts with `price_`) - you'll need this!
 
-### Create Pro Plan ($99/month)
+### Create Teams Plan ($30/month)
 1. Click **+ Add product** again
 2. Fill in:
-   - Name: `Pro Plan`
-   - Description: `20,000 credits/month, unlimited AI team members`
-   - Pricing → Price: `99.00` USD
+   - Name: `Teams Plan`
+   - Description: `500 credits/user/month, unlimited AI team members`
+   - Pricing → Price: `30.00` USD
    - Billing period: `Monthly`
 3. Click **Save product**
 4. ⚠️ **IMPORTANT**: Copy the **Price ID** (starts with `price_`)
@@ -53,8 +53,8 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxxxxxxxxxxxx
 STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxx
 
 # Price IDs (from Step 2)
-NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID=price_xxxxxxxxxxxxx
 NEXT_PUBLIC_STRIPE_PRO_PRICE_ID=price_xxxxxxxxxxxxx
+NEXT_PUBLIC_STRIPE_TEAMS_PRICE_ID=price_xxxxxxxxxxxxx
 
 # Webhook secret (we'll add this in Step 5)
 STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxx
@@ -110,7 +110,7 @@ npm run dev
 3. **Test a payment:**
    - Go to `http://localhost:3000/pricing`
    - Sign in with your Firebase account
-   - Click a paid plan (Premium or Pro)
+   - Click a paid plan (Pro or Teams)
    - Use test card: `4242 4242 4242 4242`
    - Expiry: Any future date (e.g., `12/34`)
    - CVC: Any 3 digits (e.g., `123`)

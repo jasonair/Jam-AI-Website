@@ -123,7 +123,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   console.log('Subscription deleted:', subscription.id);
 
   // Find the subscription in Firestore
-  const subscriptionsSnapshot = await db
+  const subscriptionsSnapshot = await db()
     .collection('subscriptions')
     .where('stripeSubscriptionId', '==', subscription.id)
     .limit(1)
@@ -144,8 +144,11 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   });
 
   // Update user's plan to free
-  await db.collection('users').doc(userId).update({
+  await db().collection('users').doc(userId).update({
+    plan: 'free',
     planId: 'free',
+    creditsTotal: 25,
+    creditsUsed: 0,
     updatedAt: new Date(),
   });
 
@@ -182,7 +185,7 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
     : invoiceData.subscription?.id;
 
   if (subscriptionId) {
-    const subscriptionsSnapshot = await db
+    const subscriptionsSnapshot = await db()
       .collection('subscriptions')
       .where('stripeSubscriptionId', '==', subscriptionId)
       .limit(1)
@@ -221,7 +224,7 @@ async function createOrUpdateSubscription(
   };
 
   // Check if subscription already exists
-  const existingSubscriptionsSnapshot = await db
+  const existingSubscriptionsSnapshot = await db()
     .collection('subscriptions')
     .where('stripeSubscriptionId', '==', subscription.id)
     .limit(1)
@@ -237,7 +240,7 @@ async function createOrUpdateSubscription(
     console.log(`Updated subscription ${subscription.id}`);
   } else {
     // Create new subscription
-    await db.collection('subscriptions').add({
+    await db().collection('subscriptions').add({
       ...subscriptionData,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -245,15 +248,28 @@ async function createOrUpdateSubscription(
     console.log(`Created new subscription ${subscription.id}`);
   }
 
-  // Update user's plan
-  await db.collection('users').doc(userId).set(
+  // Get credit allocation for the plan
+  const planCredits: Record<string, number> = {
+    'free': 25,
+    'pro': 500,
+    'teams': 500,
+    'enterprise': 1000,
+  };
+
+  const creditsTotal = planCredits[determinedPlanId] || 25;
+
+  // Update user's plan and reset credits for the new billing period
+  await db().collection('users').doc(userId).set(
     {
-      planId: determinedPlanId,
+      plan: determinedPlanId, // Use 'plan' to match UserProfile interface
+      planId: determinedPlanId, // Keep for backward compatibility
+      creditsTotal: creditsTotal,
+      creditsUsed: 0, // Reset credits used for new billing period
       stripeCustomerId: subscription.customer,
       updatedAt: new Date(),
     },
     { merge: true }
   );
 
-  console.log(`Updated user ${userId} to plan ${determinedPlanId}`);
+  console.log(`Updated user ${userId} to plan ${determinedPlanId} with ${creditsTotal} credits`);
 }

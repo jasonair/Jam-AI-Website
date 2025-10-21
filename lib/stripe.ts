@@ -21,17 +21,17 @@ export const getStripe = () => {
 
 // Price IDs from environment variables
 export const STRIPE_PRICES = {
-  premium: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID,
   pro: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID,
+  teams: process.env.NEXT_PUBLIC_STRIPE_TEAMS_PRICE_ID,
 } as const;
 
 // Map plan IDs to Stripe Price IDs
 export function getPriceId(planId: string): string | undefined {
   switch (planId) {
-    case 'premium':
-      return STRIPE_PRICES.premium;
     case 'pro':
       return STRIPE_PRICES.pro;
+    case 'teams':
+      return STRIPE_PRICES.teams;
     default:
       return undefined;
   }
@@ -39,8 +39,8 @@ export function getPriceId(planId: string): string | undefined {
 
 // Get plan details from price ID
 export function getPlanFromPriceId(priceId: string): string {
-  if (priceId === STRIPE_PRICES.premium) return 'premium';
   if (priceId === STRIPE_PRICES.pro) return 'pro';
+  if (priceId === STRIPE_PRICES.teams) return 'teams';
   return 'free';
 }
 

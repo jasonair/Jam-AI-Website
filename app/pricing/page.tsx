@@ -17,71 +17,73 @@ export default function PricingPage() {
 
   const plans = [
     {
-      id: 'trial',
-      name: 'Trial',
-      price: 'Free',
-      period: '7 days',
-      credits: 1000,
-      teamMembers: 10,
-      features: [
-        '1,000 credits',
-        '10 AI team members per project',
-        'All experience levels',
-        'Full feature access',
-      ],
-      popular: true,
-    },
-    {
       id: 'free',
       name: 'Free',
       price: '$0',
-      period: 'forever',
-      credits: 500,
-      teamMembers: 3,
+      period: 'user / month',
       features: [
-        '500 credits/month',
-        '3 AI team members per project',
-        'Junior & Intermediate',
-        'Basic features',
+        '2-week Pro trial',
+        '100 prompt credits / month',
+        '3 AI Team Members (Junior & Intermediate)',
+        'Local model + Gemini 2.0 Flash-Lite',
+        'Basic web search (Serper / Tavily)',
+        'Up to 3 saved Jams',
+        'Community support',
       ],
-      popular: false,
-    },
-    {
-      id: 'premium',
-      name: 'Premium',
-      price: '$29',
-      period: 'per month',
-      credits: 5000,
-      teamMembers: 12,
-      features: [
-        '5,000 credits/month',
-        '12 AI team members per project',
-        'All experience levels',
-        'Priority support',
-      ],
+      cta: 'Download',
       popular: false,
     },
     {
       id: 'pro',
       name: 'Pro',
-      price: '$99',
-      period: 'per month',
-      credits: 20000,
-      teamMembers: -1,
+      price: '$15',
+      period: 'user / month',
       features: [
-        '20,000 credits/month',
-        'Unlimited AI team members per project',
-        'All experience levels',
-        'Dedicated support',
-        'Custom integrations',
+        'Everything in Free, plus:',
+        '1,000 prompt credits / month',
+        'Gemini 2.5 Flash-Lite + Claude Instant',
+        '12 AI Team Members per Jam (All experience levels)',
+        'Advanced web search (Perplexity-style)',
+        'Image generation (low res)',
+        'Priority support',
       ],
+      cta: 'Select plan',
+      popular: true,
+    },
+    {
+      id: 'teams',
+      name: 'Teams',
+      price: '$30',
+      period: 'user / month',
+      features: [
+        'Everything in Pro, plus:',
+        '1,500 prompt credits / user / month',
+        'Shared credit pool & add-on purchasing',
+        'Unlimited AI Team Members',
+        'Create Teams from multiple AI Team Members',
+      ],
+      cta: 'Select plan',
+      popular: false,
+    },
+    {
+      id: 'enterprise',
+      name: 'Enterprise',
+      price: "Let's talk",
+      period: 'Custom Pricing (start ≈ $99 / user / month)',
+      features: [
+        'Everything in Teams, plus:',
+        '5,000 prompt credits / user / month',
+        'Private Gemini Vertex',
+        'Dedicated account manager',
+      ],
+      cta: 'View plan options',
       popular: false,
     },
   ];
 
   const handleSelectPlan = async (planId: string) => {
-    // Free plans don't require payment
-    if (planId === 'trial' || planId === 'free') {
+    // Free plan - direct download
+    if (planId === 'free') {
       if (!user) {
         router.push(`/auth/signup?plan=${planId}`);
       } else {
@@ -90,7 +92,14 @@ export default function PricingPage() {
       return;
     }
 
-    // Paid plans require authentication and Stripe checkout
+    // Enterprise - contact form or page
+    if (planId === 'enterprise') {
+      // TODO: Redirect to contact page or open contact modal
+      window.location.href = 'mailto:sales@jamair.com?subject=Enterprise%20Plan%20Inquiry';
+      return;
+    }
+
+    // Paid plans (pro, teams) require authentication and Stripe checkout
     if (!user) {
       router.push(`/auth/signup?plan=${planId}`);
       return;
@@ -136,12 +145,14 @@ export default function PricingPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <Section>
-        <Container size="lg">
+        <Container size="xl">
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold mb-4">Choose Your Plan</h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Start with a 7-day trial. No credit card required. Upgrade or downgrade anytime.
+          <div className="text-center mb-16">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4">
+              Plans for every kind of creator
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+              Start free. Upgrade when you need more credits, more AI team members, or deeper experience levels.
             </p>
             {error && (
               <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg max-w-md mx-auto">
@@ -151,57 +162,72 @@ export default function PricingPage() {
           </div>
 
           {/* Pricing Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-12">
             {plans.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative bg-white dark:bg-gray-800 rounded-2xl p-8 border-2 transition-all duration-200 hover:shadow-xl flex flex-col ${
+                className={`relative rounded-2xl p-8 border-2 transition-all duration-300 ${
                   plan.popular
-                    ? 'border-accent shadow-lg scale-105'
-                    : 'border-gray-200 dark:border-gray-700'
+                    ? 'border-accent bg-white dark:bg-gray-800 shadow-2xl scale-105'
+                    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-accent'
                 }`}
               >
                 {/* Popular Badge */}
                 {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <span className="px-4 py-1 bg-accent text-white text-sm font-bold rounded-full shadow-lg">
-                      Most Popular
-                    </span>
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-accent text-white text-sm font-semibold rounded-full">
+                    Popular
                   </div>
                 )}
 
-                {/* Plan Name */}
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                <div className="flex flex-col justify-between min-h-[500px]">
+                  {/* Plan Name */}
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                  </div>
 
-                {/* Price */}
-                <div className="mb-6">
-                  <div className="flex items-baseline gap-2">
+                  {/* Price */}
+                  <div className="flex flex-col mb-6">
                     <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-gray-600 dark:text-gray-400">{plan.period}</span>
+                    {plan.period && (
+                      <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">{plan.period}</span>
+                    )}
+                  </div>
+
+                  {/* Features */}
+                  <div className="flex-grow">
+                    <ul className="space-y-3">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <Check className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* CTA Button */}
+                  <div className="mt-6">
+                    <Button
+                      variant={plan.popular ? 'primary' : 'outline'}
+                      className="w-full"
+                      onClick={() => handleSelectPlan(plan.id)}
+                      disabled={loading === plan.id}
+                    >
+                      {loading === plan.id ? 'Loading...' : plan.cta}
+                    </Button>
                   </div>
                 </div>
-
-                {/* Features */}
-                <ul className="space-y-3 mb-8 flex-grow">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-600 dark:text-gray-400">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA Button */}
-                <Button
-                  variant={plan.popular ? 'primary' : 'outline'}
-                  className="w-full mt-auto"
-                  onClick={() => handleSelectPlan(plan.id)}
-                  disabled={loading === plan.id}
-                >
-                  {loading === plan.id ? 'Loading...' : user ? 'Switch to ' + plan.name : 'Get Started'}
-                </Button>
               </div>
             ))}
+          </div>
+
+          {/* Additional info */}
+          <div className="mt-12 mb-12 text-center space-y-2">
+            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              All paid plans include priority AI processing and faster response times.
+            </p>
           </div>
 
           {/* FAQ Section */}

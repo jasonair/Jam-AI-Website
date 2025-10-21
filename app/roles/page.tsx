@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowUp } from 'lucide-react';
+import Header from '@/components/ui/Header';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import GridBackground from '@/components/ui/GridBackground';
@@ -25,8 +26,10 @@ export default function RolesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
-      <GridBackground className="min-h-screen" opacity="subtle" variant="dots">
+    <>
+      <Header />
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
+        <GridBackground className="min-h-screen" opacity="subtle" variant="dots">
         <Section className="py-20">
           <Container>
             {/* Header */}
@@ -101,14 +104,15 @@ export default function RolesPage() {
         </Section>
       </GridBackground>
 
-      {/* Back to Top Button */}
-      <button
-        onClick={scrollToTop}
-        className="fixed bottom-8 right-8 z-50 p-4 bg-accent text-white rounded-full shadow-lg hover:bg-accent/90 transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
-        aria-label="Back to top"
-      >
-        <ArrowUp className="w-6 h-6" />
-      </button>
-    </div>
+        {/* Back to Top Button */}
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 z-50 p-4 bg-accent text-white rounded-full shadow-lg hover:bg-accent/90 transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
+          aria-label="Back to top"
+        >
+          <ArrowUp className="w-6 h-6" />
+        </button>
+      </div>
+    </>
   );
 }

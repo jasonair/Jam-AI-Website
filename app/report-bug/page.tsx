@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
+import Header from '@/components/ui/Header';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
@@ -48,8 +49,10 @@ export default function ReportBugPage() {
 
   if (isSubmitted) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <Container size="sm">
+      <>
+        <Header />
+        <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+          <Container size="sm">
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-12 text-center border border-gray-200 dark:border-gray-700">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full mb-6">
               <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
@@ -63,13 +66,16 @@ export default function ReportBugPage() {
             </p>
           </div>
         </Container>
-      </main>
+        </main>
+      </>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-20">
-      <Section>
+    <>
+      <Header />
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-20">
+        <Section>
         <Container size="md">
           {/* Header */}
           <div className="text-center mb-12">
@@ -235,7 +241,8 @@ export default function ReportBugPage() {
             </p>
           </div>
         </Container>
-      </Section>
-    </main>
+        </Section>
+      </main>
+    </>
   );
 }

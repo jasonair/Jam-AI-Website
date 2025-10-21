@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Container from '@/components/ui/Container';
 
 const footerLinks = {
@@ -23,6 +24,22 @@ export default function Footer() {
     <footer className="bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
       <Container>
         <div className="py-12 sm:py-16">
+          {/* Logo and Brand */}
+          <div className="mb-12">
+            <div className="flex items-center gap-2 mb-4">
+              <Image 
+                src="/images/Jam AI logo.png" 
+                alt="Jam AI Logo" 
+                width={40} 
+                height={40}
+                className="object-contain"
+              />
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 max-w-md">
+              Empowering teams with intelligent AI solutions for modern workflows.
+            </p>
+          </div>
+
           {/* Links grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mb-12">
             {Object.entries(footerLinks).map(([category, links]) => (

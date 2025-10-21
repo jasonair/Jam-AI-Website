@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
+import Header from '@/components/ui/Header';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
@@ -24,7 +25,9 @@ export default function AccountPage() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [isChangingPlan, setIsChangingPlan] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [syncLoading, setSyncLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [syncSuccess, setSyncSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -44,8 +47,10 @@ export default function AccountPage() {
 
   if (loading || !userProfile || !userProfile.creditsTotal) {
     return (
-      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center max-w-md">
+      <>
+        <Header />
+        <main className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+          <div className="text-center max-w-md">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-400 mb-4">Loading your account...</p>
           {!loading && !userProfile && (
@@ -66,8 +71,9 @@ export default function AccountPage() {
               </button>
             </div>
           )}
-        </div>
-      </main>
+          </div>
+        </main>
+      </>
     );
   }
 
@@ -92,17 +98,17 @@ export default function AccountPage() {
     try {
       setPortalLoading(true);
       setError(null);
+      setSyncSuccess(null);
 
-      // Get Firebase auth token
-      const token = await user.getIdToken();
-
-      // Create portal session
-      const response = await fetch('/api/create-portal-session', {
+      // Create portal session using simplified endpoint
+      const response = await fetch('/api/create-portal-session-client', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({
+          userEmail: user.email,
+        }),
       });
 
       if (!response.ok) {
@@ -125,6 +131,58 @@ export default function AccountPage() {
     }
   };
 
+  const handleSyncSubscription = async () => {
+    if (!user || !userProfile) return;
+
+    try {
+      setSyncLoading(true);
+      setError(null);
+      setSyncSuccess(null);
+
+      // Call simplified sync endpoint
+      const response = await fetch('/api/sync-subscription-client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userEmail: user.email,
+          userId: user.uid,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to sync subscription');
+      }
+
+      const data = await response.json();
+      
+      // Update Firestore directly using client SDK
+      if (data.updateNeeded) {
+        const { doc, updateDoc } = await import('firebase/firestore');
+        const { db } = await import('@/lib/firebase');
+        
+        await updateDoc(doc(db, 'users', user.uid), {
+          ...data.updateNeeded,
+          updatedAt: new Date().toISOString(),
+        });
+        
+        setSyncSuccess(`✅ Synced to ${data.plan.toUpperCase()} plan with ${data.credits} credits`);
+        
+        // Refresh user profile to show updated data
+        await refreshUserProfile();
+      } else {
+        setSyncSuccess(data.message);
+      }
+    } catch (err: any) {
+      console.error('Error syncing subscription:', err);
+      setError(err.message || 'Failed to sync subscription. Please try again.');
+    } finally {
+      setSyncLoading(false);
+    }
+  };
+
   // Calculate credits info with safe defaults
   const creditsAvailable = (userProfile.creditsTotal || 0) - (userProfile.creditsUsed || 0);
   const creditsPercentage = userProfile.creditsTotal 
@@ -143,46 +201,49 @@ export default function AccountPage() {
     year: 'numeric',
   });
 
-  // Plans configuration
-  const currentPlan = userProfile.plan || 'trial';
+  // Plans configuration - Updated to match main pricing page
+  const currentPlan = (userProfile.plan || 'trial') as 'trial' | 'free' | 'pro' | 'teams' | 'enterprise';
   const plans = [
-    {
-      id: 'trial',
-      name: 'Trial',
-      credits: 1000,
-      teamMembers: 3,
-      features: ['All experience levels'],
-      isCurrent: currentPlan === 'trial',
-    },
     {
       id: 'free',
       name: 'Free',
-      credits: 500,
-      teamMembers: 2,
-      features: ['Junior & Intermediate'],
+      credits: 100,
+      teamMembers: 3,
+      features: ['Junior & Intermediate', 'Local model + Gemini 2.0 Flash-Lite', 'Basic web search', 'Community support'],
       isCurrent: currentPlan === 'free',
-    },
-    {
-      id: 'premium',
-      name: 'Premium',
-      credits: 5000,
-      teamMembers: 5,
-      features: ['All experience levels'],
-      isCurrent: currentPlan === 'premium',
     },
     {
       id: 'pro',
       name: 'Pro',
-      credits: 20000,
-      teamMembers: 10,
-      features: ['All experience levels'],
+      credits: 1000,
+      teamMembers: 12,
+      features: ['All experience levels', 'Gemini 2.5 Flash-Lite + Claude Instant', 'Advanced web search', 'Image generation', 'Priority support'],
       isCurrent: currentPlan === 'pro',
+      highlighted: true,
+    },
+    {
+      id: 'teams',
+      name: 'Teams',
+      credits: 1500,
+      teamMembers: 'Unlimited',
+      features: ['Shared credit pool & add-on purchasing', 'Create Teams from multiple AI Team Members'],
+      isCurrent: currentPlan === 'teams',
+    },
+    {
+      id: 'enterprise',
+      name: 'Enterprise',
+      credits: 5000,
+      teamMembers: 'Unlimited',
+      features: ['Private Gemini Vertex', 'Dedicated account manager'],
+      isCurrent: currentPlan === 'enterprise',
     },
   ];
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Section>
+    <>
+      <Header />
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <Section>
         <Container size="md">
           {/* Header */}
           <div className="mb-8">
@@ -192,7 +253,7 @@ export default function AccountPage() {
           <div className="space-y-6">
             {/* User Profile Section */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-6 mb-6">
                 {/* Avatar */}
                 <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                   {userProfile.photoURL ? (
@@ -215,10 +276,41 @@ export default function AccountPage() {
                   </span>
                 </div>
               </div>
+
+              {/* Sync Subscription - Always visible */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                {error && (
+                  <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+                  </div>
+                )}
+
+                {syncSuccess && (
+                  <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <p className="text-green-600 dark:text-green-400 text-sm">{syncSuccess}</p>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 mr-4">
+                    <p className="text-sm font-medium mb-1">Stripe Subscription Not Syncing?</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Click to sync your Stripe subscription with your account
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={handleSyncSubscription}
+                    disabled={syncLoading}
+                  >
+                    {syncLoading ? 'Syncing...' : 'Sync Subscription'}
+                  </Button>
+                </div>
+              </div>
             </div>
 
             {/* Subscription Management Section - Only show for paid plans */}
-            {(currentPlan === 'premium' || currentPlan === 'pro') && (
+            {(currentPlan === 'pro' || currentPlan === 'teams' || currentPlan === 'enterprise') && (
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between mb-6">
                   <div>
@@ -236,16 +328,32 @@ export default function AccountPage() {
                   </div>
                 )}
 
-                <div className="space-y-4">
+                {syncSuccess && (
+                  <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <p className="text-green-600 dark:text-green-400 text-sm">{syncSuccess}</p>
+                  </div>
+                )}
+
+                <div className="flex flex-wrap gap-3">
                   <Button
                     variant="primary"
-                    className="w-full sm:w-auto"
                     onClick={handleManageSubscription}
-                    disabled={portalLoading}
+                    disabled={portalLoading || syncLoading}
                   >
                     <Settings className="w-4 h-4 mr-2" />
                     {portalLoading ? 'Loading...' : 'Manage Billing'}
                   </Button>
+                  
+                  <Button
+                    variant="outline"
+                    onClick={handleSyncSubscription}
+                    disabled={portalLoading || syncLoading}
+                  >
+                    {syncLoading ? 'Syncing...' : 'Sync Subscription'}
+                  </Button>
+                </div>
+
+                <div className="space-y-4 mt-4">
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     You'll be redirected to our secure billing portal where you can:
                   </p>
@@ -294,7 +402,15 @@ export default function AccountPage() {
 
             {/* Plans Section */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
-              <h2 className="text-xl font-bold mb-6">Plans</h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold">Plans</h2>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Your Plan:</span>
+                  <span className="px-4 py-1.5 bg-accent text-white text-sm font-semibold rounded-lg">
+                    {userProfile.plan ? userProfile.plan.charAt(0).toUpperCase() + userProfile.plan.slice(1) : 'Trial'}
+                  </span>
+                </div>
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {plans.map((plan) => (
@@ -429,7 +545,8 @@ export default function AccountPage() {
             </a>
           </div>
         </Container>
-      </Section>
-    </main>
+        </Section>
+      </main>
+    </>
   );
 }

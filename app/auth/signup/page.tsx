@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
@@ -70,9 +71,18 @@ export default function SignUpPage() {
           <div className="max-w-md mx-auto">
             {/* Header */}
             <div className="text-center mb-8">
+              <div className="flex justify-center mb-4">
+                <Image 
+                  src="/images/Jam AI logo.png" 
+                  alt="Jam AI Logo" 
+                  width={64} 
+                  height={64}
+                  className="object-contain"
+                />
+              </div>
               <h1 className="text-4xl font-bold mb-2">Create Account</h1>
               <p className="text-gray-600 dark:text-gray-400">
-                Start your 7-day trial with 1,000 credits
+                Start your 7-day trial with <span className="font-bold text-blue-600 dark:text-blue-400">Jam AI</span>
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-500 mt-3">
                 Already have an account?{' '}

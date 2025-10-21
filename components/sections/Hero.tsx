@@ -52,7 +52,7 @@ export default function Hero() {
 
           {/* Subheadline */}
           <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto text-balance">
-            Name your AI specialists, choose their expertise, and chat with your whole team — all in one visual workspace where you can see everyone's insights at once.
+            Name your AI specialists, choose their expertise, and chat with your whole team — all in <span className="font-bold text-blue-600 dark:text-blue-400">Jam AI</span>, one visual workspace where you can see everyone's insights at once.
           </p>
 
           {/* CTAs */}

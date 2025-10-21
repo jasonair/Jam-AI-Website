@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Lock, AlertCircle } from 'lucide-react';
 import { useAdminAuth } from '@/lib/hooks/useAdminAuth';
 import Button from '@/components/ui/Button';
@@ -39,16 +40,25 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20 flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <Container size="sm">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
           <div className="text-center mb-8">
+            <div className="flex justify-center mb-4">
+              <Image 
+                src="/images/Jam AI logo.png" 
+                alt="Jam AI Logo" 
+                width={64} 
+                height={64}
+                className="object-contain"
+              />
+            </div>
             <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-accent" />
             </div>
             <h1 className="text-3xl font-bold mb-2">Admin Access</h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Sign in to access the analytics dashboard
+              Sign in to access the <span className="font-bold text-blue-600 dark:text-blue-400">Jam AI</span> analytics dashboard
             </p>
           </div>
 

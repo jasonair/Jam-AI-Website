@@ -22,7 +22,7 @@ const features = [
     icon: MessageCircle,
     title: 'Get different perspectives',
     subtitle: 'Jam with this',
-    description: 'Select text and ask questions with full context. Switch AI team members to get fresh takes from different specialists.',
+    description: 'Select text and ask questions with full context in Jam AI. Switch AI team members to get fresh takes from different specialists.',
     color: 'bg-green-500',
   },
   {

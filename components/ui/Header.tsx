@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import Button from './Button';
@@ -17,8 +18,14 @@ export default function Header() {
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="text-2xl font-bold text-accent">
-            Jam AI
+          <Link href="/" className="flex items-center gap-2 text-2xl font-bold text-accent">
+            <Image 
+              src="/images/Jam AI logo.png" 
+              alt="Jam AI Logo" 
+              width={32} 
+              height={32}
+              className="object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}

@@ -33,7 +33,7 @@ export default function Value() {
       <Container>
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4">
-            Why Jam AI
+            Why <span className="text-blue-600 dark:text-blue-400 font-bold">Jam AI</span>
           </h2>
         </div>
 

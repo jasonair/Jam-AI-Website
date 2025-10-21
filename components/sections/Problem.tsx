@@ -16,7 +16,7 @@ export default function Problem() {
                 Traditional AI chat apps trap your ideas in long, linear conversations. Endlessly scrolling back through threads. No way to break off important sections, gather insights across multiple chats, or make sense of it all in one space.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                Jam AI lets you break conversations into nodes, organize what matters, and see everything laid out visually — no more getting lost in the scroll.
+                <span className="font-bold text-blue-600 dark:text-blue-400">Jam AI</span> lets you break conversations into nodes, organize what matters, and see everything laid out visually — no more getting lost in the scroll.
               </p>
             </div>
 

@@ -1,4 +1,5 @@
 import { Check } from 'lucide-react';
+import Link from 'next/link';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
@@ -6,64 +7,76 @@ import GridBackground from '@/components/ui/GridBackground';
 
 interface PricingPlan {
   name: string;
-  tagline: string;
   price: string;
   period?: string;
   features: string[];
   cta: string;
   highlighted?: boolean;
-  current?: boolean;
+  isEnterprise?: boolean;
+  id: string;
 }
 
 const plans: PricingPlan[] = [
   {
+    id: 'free',
     name: 'Free',
-    tagline: 'Jam with three AIs — just enough to start building your ideas.',
     price: '$0',
+    period: 'user / month',
     features: [
-      '500 credits / month',
-      '3 AI team members per project',
-      'Junior & Intermediate levels',
+      '2-week Pro trial',
+      '100 prompt credits / month',
+      '3 AI Team Members (Junior & Intermediate)',
+      'Local model + Gemini 2.0 Flash-Lite',
+      'Basic web search (Serper / Tavily)',
+      'Up to 3 saved Jams',
+      'Community support',
     ],
-    cta: 'Select',
+    cta: 'Download',
   },
   {
-    name: 'Trial',
-    tagline: 'Full power for your first 7 days to explore everything.',
-    price: 'Free',
-    period: '7 days',
+    id: 'pro',
+    name: 'Pro',
+    price: '$15',
+    period: 'user / month',
     features: [
-      '1,000 credits / month',
-      '10 AI team members per project',
-      'All experience levels',
+      'Everything in Free, plus:',
+      '1,000 prompt credits / month',
+      'Gemini 2.5 Flash-Lite + Claude Instant',
+      '12 AI Team Members per Jam (All experience levels)',
+      'Advanced web search (Perplexity-style)',
+      'Image generation (low res)',
+      'Priority support',
     ],
-    cta: 'Your Current Plan',
-    current: true,
-  },
-  {
-    name: 'Premium',
-    tagline: 'Go further with more AIs and deeper credits.',
-    price: '$19',
-    period: '/month',
-    features: [
-      '5,000 credits / month',
-      '12 AI team members per project',
-      'All experience levels',
-    ],
-    cta: 'Select',
+    cta: 'Select plan',
     highlighted: true,
   },
   {
-    name: 'Pro',
-    tagline: 'For teams who want unlimited momentum.',
-    price: '$49',
-    period: '/month',
+    id: 'teams',
+    name: 'Teams',
+    price: '$30',
+    period: 'user / month',
     features: [
-      '20,000 credits / month',
-      'Unlimited AI team members per project',
-      'All experience levels',
+      'Everything in Pro, plus:',
+      '1,500 prompt credits / user / month',
+      'Shared credit pool & add-on purchasing',
+      'Unlimited AI Team Members',
+      'Create Teams from multiple AI Team Members',
     ],
-    cta: 'Select',
+    cta: 'Select plan',
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    price: "Let's talk",
+    period: 'Custom Pricing (start ≈ $99 / user / month)',
+    features: [
+      'Everything in Teams, plus:',
+      '5,000 prompt credits / user / month',
+      'Private Gemini Vertex',
+      'Dedicated account manager',
+    ],
+    cta: 'View plan options',
+    isEnterprise: true,
   },
 ];
 
@@ -88,8 +101,6 @@ export default function Pricing() {
               className={`relative rounded-2xl p-8 border-2 transition-all duration-300 ${
                 plan.highlighted
                   ? 'border-accent bg-white dark:bg-gray-800 shadow-2xl scale-105'
-                  : plan.current
-                  ? 'border-green-500 bg-white dark:bg-gray-800'
                   : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-accent'
               }`}
             >
@@ -99,43 +110,45 @@ export default function Pricing() {
                 </div>
               )}
 
-              <div className="space-y-6">
+              <div className="flex flex-col justify-between min-h-[500px]">
                 {/* Plan name */}
                 <div>
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    {plan.tagline}
-                  </p>
                 </div>
 
                 {/* Price */}
-                <div className="flex items-baseline gap-1">
+                <div className="flex flex-col mb-6">
                   <span className="text-4xl font-bold">{plan.price}</span>
                   {plan.period && (
-                    <span className="text-gray-500 dark:text-gray-400">{plan.period}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">{plan.period}</span>
                   )}
                 </div>
 
                 {/* Features */}
-                <ul className="space-y-3">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="flex-grow">
+                  <ul className="space-y-3">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-start gap-3">
+                        <Check className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
                 {/* CTA */}
-                <Button
-                  variant={plan.highlighted ? 'primary' : plan.current ? 'secondary' : 'outline'}
-                  className="w-full"
-                  disabled={plan.current}
-                >
-                  {plan.cta}
-                </Button>
+                <div className="mt-6">
+                  <Link href="/pricing">
+                    <Button
+                      variant={plan.highlighted ? 'primary' : 'outline'}
+                      className="w-full"
+                    >
+                      {plan.cta}
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
           ))}

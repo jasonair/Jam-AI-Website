@@ -22,7 +22,7 @@ export interface UserProfile {
   email: string;
   displayName: string;
   photoURL?: string;
-  plan: 'trial' | 'free' | 'premium' | 'pro';
+  plan: 'trial' | 'free' | 'pro' | 'teams' | 'enterprise';
   creditsTotal: number;
   creditsUsed: number;
   teamMembers: number;
@@ -59,13 +59,15 @@ const getPlanDetails = (planType: UserProfile['plan']) => {
     case 'trial':
       return { creditsTotal: 1000, teamMembersLimit: 3 };
     case 'free':
-      return { creditsTotal: 500, teamMembersLimit: 2 };
-    case 'premium':
-      return { creditsTotal: 5000, teamMembersLimit: 5 };
+      return { creditsTotal: 25, teamMembersLimit: 3 };
     case 'pro':
-      return { creditsTotal: 20000, teamMembersLimit: 10 };
+      return { creditsTotal: 500, teamMembersLimit: 12 };
+    case 'teams':
+      return { creditsTotal: 500, teamMembersLimit: -1 }; // -1 = unlimited
+    case 'enterprise':
+      return { creditsTotal: 1000, teamMembersLimit: -1 }; // -1 = unlimited
     default:
-      return { creditsTotal: 500, teamMembersLimit: 2 };
+      return { creditsTotal: 25, teamMembersLimit: 3 };
   }
 };
 
