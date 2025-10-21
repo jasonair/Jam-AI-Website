@@ -42,7 +42,7 @@ export default function Hero() {
       <GridBackground className="min-h-screen flex items-center justify-center w-full" opacity="subtle" variant="dots">
         <section className="relative w-full">
           <Container className="relative z-10">
-        <div className="text-center space-y-8 animate-fade-in">
+        <div className="text-center space-y-8 animate-fade-in pt-16">
           {/* Headline */}
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-balance">
             Build your AI dream team

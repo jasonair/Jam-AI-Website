@@ -13,19 +13,26 @@ export default function Problem() {
                 Lost in endless threads?
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                Traditional AI chat apps trap your ideas in long, linear conversations. Endlessly scrolling back through threads. No way to break off important sections, gather insights across multiple chats, or make sense of it all in one space.
+                Traditional AI chat apps trap your ideas in long, linear conversations. Endlessly scrolling back through threads or searching for that one chat you had weeks ago. No way to break off important sections, gather insights across multiple chats, or make sense of it all in one space.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
                 <span className="font-bold text-blue-600 dark:text-blue-400">Jam AI</span> lets you break conversations into nodes, organize what matters, and see everything laid out visually — no more getting lost in the scroll.
               </p>
             </div>
 
-            {/* Image Placeholder */}
+            {/* Video */}
             <div className="relative">
-              <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center">
-                <p className="text-gray-400 dark:text-gray-500 text-sm">
-                  Add your image here
-                </p>
+              <div className="aspect-video rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-gray-700 shadow-lg">
+                <video
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                >
+                  <source src="/videos/long-gpt-threads.mov" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
               </div>
             </div>
           </div>
