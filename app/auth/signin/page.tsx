@@ -50,35 +50,65 @@ export default function SignInPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <Section>
-        <Container size="sm">
-          <div className="max-w-md mx-auto">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <div className="flex justify-center mb-4">
-                <Image 
-                  src="/images/Jam AI logo.png" 
-                  alt="Jam AI Logo" 
-                  width={64} 
-                  height={64}
-                  className="object-contain"
-                />
-              </div>
-              <h1 className="text-4xl font-bold mb-2">Welcome Back</h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Sign in to your <span className="font-bold text-blue-600 dark:text-blue-400">Jam AI</span> account
+    <main className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="flex flex-col md:flex-row h-screen">
+        {/* Left Column - Info */}
+        <div className="w-full md:w-1/2 bg-gradient-to-br from-blue-600 to-blue-800 text-white p-12 flex flex-col justify-center">
+          <div className="max-w-md mx-auto w-full">
+            <div className="mb-8">
+              <Image 
+                src="/images/Jam AI logo.png" 
+                alt="Jam AI Logo" 
+                width={64} 
+                height={64}
+                className="object-contain mb-6"
+              />
+              <h1 className="text-4xl font-bold mb-4">Welcome Back</h1>
+              <p className="text-lg text-blue-100 mb-8">
+                Sign in to your <span className="font-bold text-white">Jam AI</span> account and continue your journey with us.
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-500 mt-3">
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="text-white font-bold">1</span>
+                  </div>
+                  <span>Access all your projects</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="text-white font-bold">2</span>
+                  </div>
+                  <span>Collaborate with your team</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="text-white font-bold">3</span>
+                  </div>
+                  <span>Unlock premium features</span>
+                </div>
+              </div>
+              <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
                 Don't have an account?{' '}
-                <Link href="/auth/signup" className="text-accent hover:text-accent-hover font-semibold underline">
+                <Link href="/auth/signup" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
                   Sign up here
                 </Link>
               </p>
             </div>
+          </div>
+        </div>
+        
+        {/* Right Column - Form */}
+        <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-gray-900">
+          <div className="w-full max-w-md">
+            <div className="text-center mb-8 md:hidden">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h1>
+              <p className="text-gray-600 dark:text-gray-400">
+                Sign in to your <span className="font-bold text-blue-600 dark:text-blue-400">Jam AI</span> account
+              </p>
+            </div>
 
             {/* Sign In Form */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
               {error && (
                 <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                   <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
@@ -189,8 +219,8 @@ export default function SignInPage() {
               </Link>
             </div>
           </div>
-        </Container>
-      </Section>
+        </div>
+      </div>
     </main>
   );
 }

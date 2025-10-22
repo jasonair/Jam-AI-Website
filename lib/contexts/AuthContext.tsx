@@ -63,9 +63,9 @@ const getPlanDetails = (planType: UserProfile['plan']) => {
     case 'pro':
       return { creditsTotal: 500, teamMembersLimit: 12 };
     case 'teams':
-      return { creditsTotal: 500, teamMembersLimit: -1 }; // -1 = unlimited
+      return { creditsTotal: 1500, teamMembersLimit: -1 }; // -1 = unlimited
     case 'enterprise':
-      return { creditsTotal: 1000, teamMembersLimit: -1 }; // -1 = unlimited
+      return { creditsTotal: 5000, teamMembersLimit: -1 }; // -1 = unlimited
     default:
       return { creditsTotal: 25, teamMembersLimit: 3 };
   }

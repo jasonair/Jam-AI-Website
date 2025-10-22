@@ -252,8 +252,8 @@ async function createOrUpdateSubscription(
   const planCredits: Record<string, number> = {
     'free': 25,
     'pro': 500,
-    'teams': 500,
-    'enterprise': 1000,
+    'teams': 1500,
+    'enterprise': 5000,
   };
 
   const creditsTotal = planCredits[determinedPlanId] || 25;

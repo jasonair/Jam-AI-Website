@@ -65,35 +65,59 @@ export default function SignUpPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <Section>
-        <Container size="sm">
-          <div className="max-w-md mx-auto">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <div className="flex justify-center mb-4">
-                <Image 
-                  src="/images/Jam AI logo.png" 
-                  alt="Jam AI Logo" 
-                  width={64} 
-                  height={64}
-                  className="object-contain"
-                />
+    <main className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="flex flex-col md:flex-row h-screen">
+        {/* Left Column - Info */}
+        <div className="w-full md:w-1/2 bg-gradient-to-br from-blue-600 to-blue-800 text-white p-12 flex flex-col justify-center">
+          <div className="max-w-md mx-auto w-full">
+            <div className="mb-8">
+              <Image 
+                src="/images/Jam AI logo.png" 
+                alt="Jam AI Logo" 
+                width={64} 
+                height={64}
+                className="object-contain mb-6"
+              />
+              <h1 className="text-4xl font-bold mb-4">Join Jam AI</h1>
+              <p className="text-lg text-blue-100 mb-8">
+                Start your 7-day free trial and experience the power of <span className="font-bold text-white">Jam AI</span>
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="text-white font-bold">1</span>
+                  </div>
+                  <span>No credit card required</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="text-white font-bold">2</span>
+                  </div>
+                  <span>Cancel anytime</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="text-white font-bold">3</span>
+                  </div>
+                  <span>Full access to all features</span>
+                </div>
               </div>
-              <h1 className="text-4xl font-bold mb-2">Create Account</h1>
+            </div>
+          </div>
+        </div>
+        
+        {/* Right Column - Form */}
+        <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-gray-900">
+          <div className="w-full max-w-md">
+            <div className="text-center mb-8 md:hidden">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Create Account</h1>
               <p className="text-gray-600 dark:text-gray-400">
                 Start your 7-day trial with <span className="font-bold text-blue-600 dark:text-blue-400">Jam AI</span>
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-500 mt-3">
-                Already have an account?{' '}
-                <Link href="/auth/signin" className="text-accent hover:text-accent-hover font-semibold underline">
-                  Sign in here
-                </Link>
               </p>
             </div>
 
             {/* Sign Up Form */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
               {error && (
                 <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                   <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
@@ -213,24 +237,16 @@ export default function SignUpPage() {
                 <span>Sign up with Google</span>
               </button>
 
-              {/* Sign In Link */}
-              <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
                 Already have an account?{' '}
-                <Link href="/auth/signin" className="text-accent hover:text-accent-hover font-medium">
-                  Sign in
+                <Link href="/auth/signin" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+                  Sign in here
                 </Link>
               </p>
             </div>
-
-            {/* Back to Home */}
-            <div className="mt-6 text-center">
-              <Link href="/" className="text-sm text-gray-600 dark:text-gray-400 hover:text-accent">
-                ← Back to Home
-              </Link>
-            </div>
           </div>
-        </Container>
-      </Section>
+        </div>
+      </div>
     </main>
   );
 }
