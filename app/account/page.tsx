@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import Header from '@/components/ui/Header';
@@ -26,6 +26,7 @@ export default function AccountPage() {
   const [isChangingPlan, setIsChangingPlan] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
   const [syncLoading, setSyncLoading] = useState(false);
+  const hasSynced = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [syncSuccess, setSyncSuccess] = useState<string | null>(null);
 
@@ -35,6 +36,13 @@ export default function AccountPage() {
       router.push('/auth/signin');
     }
   }, [loading, user, router]);
+
+  useEffect(() => {
+    if (user && userProfile && !hasSynced.current) {
+      hasSynced.current = true;
+      handleSyncSubscription();
+    }
+  }, [user, userProfile]);
 
 
   if (loading || !userProfile) {
@@ -123,7 +131,7 @@ export default function AccountPage() {
     }
   };
 
-  const handleSyncSubscription = async () => {
+  const handleSyncSubscription = async (isManual = false) => {
     if (!user || !userProfile) return;
 
     try {
@@ -160,11 +168,12 @@ export default function AccountPage() {
           updatedAt: new Date().toISOString(),
         });
         
-        setSyncSuccess(`✅ Synced to ${data.plan.toUpperCase()} plan with ${data.credits} credits`);
-        
+        if (isManual) {
+          setSyncSuccess(`✅ Synced to ${data.plan.toUpperCase()} plan with ${data.credits} credits`);
+        }
         // Refresh user profile to show updated data
         await refreshUserProfile();
-      } else {
+      } else if (isManual) {
         setSyncSuccess(data.message);
       }
     } catch (err: any) {
@@ -270,36 +279,6 @@ export default function AccountPage() {
                 </div>
               </div>
 
-              {/* Sync Subscription - Always visible */}
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                {error && (
-                  <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                    <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
-                  </div>
-                )}
-
-                {syncSuccess && (
-                  <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                    <p className="text-green-600 dark:text-green-400 text-sm">{syncSuccess}</p>
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 mr-4">
-                    <p className="text-sm font-medium mb-1">Stripe Subscription Not Syncing?</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Click to sync your Stripe subscription with your account
-                    </p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    onClick={handleSyncSubscription}
-                    disabled={syncLoading}
-                  >
-                    {syncLoading ? 'Syncing...' : 'Sync Subscription'}
-                  </Button>
-                </div>
-              </div>
             </div>
 
             {/* Subscription Management Section - Only show for paid plans */}
@@ -337,13 +316,6 @@ export default function AccountPage() {
                     {portalLoading ? 'Loading...' : 'Manage Billing'}
                   </Button>
                   
-                  <Button
-                    variant="outline"
-                    onClick={handleSyncSubscription}
-                    disabled={portalLoading || syncLoading}
-                  >
-                    {syncLoading ? 'Syncing...' : 'Sync Subscription'}
-                  </Button>
                 </div>
 
                 <div className="space-y-4 mt-4">
@@ -390,6 +362,68 @@ export default function AccountPage() {
                 {trialDaysRemaining !== null && (
                   <span>Trial ends in {trialDaysRemaining} days ({new Date(userProfile.trialEndDate!).toLocaleDateString()})</span>
                 )}
+              </div>
+            </div>
+
+            {/* Account Activity Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-bold mb-4">Account Activity</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">Your JamAI usage this month</p>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                {/* Nodes Created */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
+                    <FileText className="w-5 h-5" />
+                    <span className="text-sm">Nodes Created</span>
+                  </div>
+                  <p className="text-4xl font-bold">{userProfile.metadata?.totalNodesCreated || 0}</p>
+                </div>
+
+                {/* AI Messages */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
+                    <MessageSquare className="w-5 h-5" />
+                    <span className="text-sm">AI Messages</span>
+                  </div>
+                  <p className="text-4xl font-bold">{userProfile.metadata?.totalMessagesGenerated || 0}</p>
+                </div>
+
+                {/* Notes Created */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
+                    <FileText className="w-5 h-5" />
+                    <span className="text-sm">Notes Created</span>
+                  </div>
+                  <p className="text-4xl font-bold">{userProfile.metadata?.totalNotesCreated || 0}</p>
+                </div>
+
+                {/* Child Nodes */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
+                    <GitBranch className="w-5 h-5" />
+                    <span className="text-sm">Child Nodes</span>
+                  </div>
+                  <p className="text-4xl font-bold">{userProfile.metadata?.totalChildNodesCreated || 0}</p>
+                </div>
+
+                {/* Expand Actions */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
+                    <Maximize2 className="w-5 h-5" />
+                    <span className="text-sm">Expand Actions</span>
+                  </div>
+                  <p className="text-4xl font-bold">{userProfile.metadata?.totalExpandActions || 0}</p>
+                </div>
+
+                {/* AI Team Members Used */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
+                    <Users className="w-5 h-5" />
+                    <span className="text-sm">AI Team Members Used</span>
+                  </div>
+                  <p className="text-4xl font-bold">{userProfile.metadata?.totalTeamMembersUsed || 0}</p>
+                </div>
               </div>
             </div>
 
@@ -453,68 +487,6 @@ export default function AccountPage() {
                     )}
                   </div>
                 ))}
-              </div>
-            </div>
-
-            {/* Account Activity Section */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
-              <h2 className="text-xl font-bold mb-4">Account Activity</h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">Your JamAI usage this month</p>
-
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                {/* Nodes Created */}
-                <div>
-                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
-                    <FileText className="w-5 h-5" />
-                    <span className="text-sm">Nodes Created</span>
-                  </div>
-                  <p className="text-4xl font-bold">{userProfile.metadata?.totalNodesCreated || 0}</p>
-                </div>
-
-                {/* AI Messages */}
-                <div>
-                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
-                    <MessageSquare className="w-5 h-5" />
-                    <span className="text-sm">AI Messages</span>
-                  </div>
-                  <p className="text-4xl font-bold">{userProfile.metadata?.totalMessagesGenerated || 0}</p>
-                </div>
-
-                {/* Notes Created */}
-                <div>
-                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
-                    <FileText className="w-5 h-5" />
-                    <span className="text-sm">Notes Created</span>
-                  </div>
-                  <p className="text-4xl font-bold">{userProfile.metadata?.totalNotesCreated || 0}</p>
-                </div>
-
-                {/* Child Nodes */}
-                <div>
-                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
-                    <GitBranch className="w-5 h-5" />
-                    <span className="text-sm">Child Nodes</span>
-                  </div>
-                  <p className="text-4xl font-bold">{userProfile.metadata?.totalChildNodesCreated || 0}</p>
-                </div>
-
-                {/* Expand Actions */}
-                <div>
-                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
-                    <Maximize2 className="w-5 h-5" />
-                    <span className="text-sm">Expand Actions</span>
-                  </div>
-                  <p className="text-4xl font-bold">{userProfile.metadata?.totalExpandActions || 0}</p>
-                </div>
-
-                {/* AI Team Members Used */}
-                <div>
-                  <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
-                    <Users className="w-5 h-5" />
-                    <span className="text-sm">AI Team Members Used</span>
-                  </div>
-                  <p className="text-4xl font-bold">{userProfile.metadata?.totalTeamMembersUsed || 0}</p>
-                </div>
               </div>
             </div>
 
