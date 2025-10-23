@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { getIdToken } from 'firebase/auth';
+import { downloadApp } from '@/lib/downloadApp';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
-import { openMacAppWithAuth, isMacOS, MAC_APP_DOWNLOAD_URL } from '@/lib/deepLink';
+import { openMacAppWithAuth, isMacOS } from '@/lib/deepLink';
 import { ExternalLink, Download, CheckCircle } from 'lucide-react';
 
 export default function AuthSuccessPage() {
@@ -17,6 +18,8 @@ export default function AuthSuccessPage() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState('');
   const [idToken, setIdToken] = useState<string | null>(null);
+  const [downloadLoading, setDownloadLoading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   useEffect(() => {
     const handleAuth = async () => {
@@ -58,6 +61,19 @@ export default function AuthSuccessPage() {
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      setDownloadLoading(true);
+      setDownloadError(null);
+      await downloadApp('success', user?.uid);
+    } catch (error) {
+      console.error('Download error:', error);
+      setDownloadError('Failed to download. Please try again.');
+    } finally {
+      setDownloadLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <Section>
@@ -96,18 +112,22 @@ export default function AuthSuccessPage() {
                           Open Mac App
                         </Button>
 
-                        <a
-                          href={MAC_APP_DOWNLOAD_URL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block"
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={handleDownload}
+                          disabled={downloadLoading}
                         >
-                          <Button variant="outline" className="w-full">
-                            <Download className="w-5 h-5 mr-2" />
-                            Download Mac App
-                          </Button>
-                        </a>
+                          <Download className="w-5 h-5 mr-2" />
+                          {downloadLoading ? 'Preparing...' : 'Download Mac App'}
+                        </Button>
                       </>
+                    )}
+
+                    {downloadError && (
+                      <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                        <p className="text-red-600 dark:text-red-400 text-sm">{downloadError}</p>
+                      </div>
                     )}
 
                     <Button
@@ -141,18 +161,22 @@ export default function AuthSuccessPage() {
                           Try Opening App Again
                         </Button>
 
-                        <a
-                          href={MAC_APP_DOWNLOAD_URL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block"
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={handleDownload}
+                          disabled={downloadLoading}
                         >
-                          <Button variant="outline" className="w-full">
-                            <Download className="w-5 h-5 mr-2" />
-                            Download Mac App
-                          </Button>
-                        </a>
+                          <Download className="w-5 h-5 mr-2" />
+                          {downloadLoading ? 'Preparing...' : 'Download Mac App'}
+                        </Button>
                       </>
+                    )}
+
+                    {downloadError && (
+                      <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                        <p className="text-red-600 dark:text-red-400 text-sm">{downloadError}</p>
+                      </div>
                     )}
 
                     <Button

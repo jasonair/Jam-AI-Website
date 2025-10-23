@@ -12,7 +12,8 @@ import {
   Calendar,
   BarChart3,
   PieChart as PieChartIcon,
-  LayoutGrid
+  LayoutGrid,
+  Download
 } from 'lucide-react';
 import { useAdminAuth } from '@/lib/hooks/useAdminAuth';
 import {
@@ -25,12 +26,15 @@ import {
   getTotalUsersCount,
   getAccountActivitySummary,
   getTotalProjectsCreated,
+  getTotalAppDownloads,
+  getDownloadsBySource,
   TokenUsageSummary,
   TeamMemberUsage,
   PlanDistribution,
   DailyTrend,
   RoleCost,
-  AccountActivitySummary
+  AccountActivitySummary,
+  DownloadsBySource
 } from '@/lib/analytics';
 import StatCard from '@/components/admin/StatCard';
 import LineChart from '@/components/admin/LineChart';
@@ -57,6 +61,8 @@ export default function AdminDashboardPage() {
   const [totalUsers, setTotalUsers] = useState(0);
   const [accountActivity, setAccountActivity] = useState<AccountActivitySummary | null>(null);
   const [totalProjects, setTotalProjects] = useState(0);
+  const [totalDownloads, setTotalDownloads] = useState(0);
+  const [downloadsBySource, setDownloadsBySource] = useState<DownloadsBySource | null>(null);
 
   useEffect(() => {
     if (!loading && !isAdmin) {
@@ -76,7 +82,9 @@ export default function AdminDashboardPage() {
         activeUsersData,
         totalUsersData,
         accountActivityData,
-        totalProjectsData
+        totalProjectsData,
+        totalDownloadsData,
+        downloadsBySourceData
       ] = await Promise.all([
         getTokenUsageSummary(dateRange),
         getMostUsedTeamMembers(10),
@@ -86,7 +94,9 @@ export default function AdminDashboardPage() {
         getActiveUsersCount(dateRange),
         getTotalUsersCount(),
         getAccountActivitySummary(dateRange),
-        getTotalProjectsCreated()
+        getTotalProjectsCreated(),
+        getTotalAppDownloads(),
+        getDownloadsBySource()
       ]);
 
       setTokenUsage(tokenData);
@@ -98,6 +108,8 @@ export default function AdminDashboardPage() {
       setTotalUsers(totalUsersData);
       setAccountActivity(accountActivityData);
       setTotalProjects(totalProjectsData);
+      setTotalDownloads(totalDownloadsData);
+      setDownloadsBySource(downloadsBySourceData);
     } catch (error) {
       console.error('Failed to load analytics:', error);
     } finally {
@@ -220,7 +232,7 @@ export default function AdminDashboardPage() {
             {/* Key Metrics */}
             <div>
               <h2 className="text-xl font-bold mb-4">Key Metrics</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
                 <StatCard
                   title="Total Cost"
                   value={`$${tokenUsage?.totalCost.toFixed(2) || '0.00'}`}
@@ -255,6 +267,13 @@ export default function AdminDashboardPage() {
                   icon={LayoutGrid}
                   iconColor="text-teal-600"
                   subtitle="All-time"
+                />
+                <StatCard
+                  title="App Downloads"
+                  value={totalDownloads.toLocaleString()}
+                  icon={Download}
+                  iconColor="text-indigo-600"
+                  subtitle="All-time DMG downloads"
                 />
               </div>
             </div>
@@ -413,6 +432,51 @@ export default function AdminDashboardPage() {
                   height={300}
                 />
               </div>
+
+              {/* App Downloads by Source */}
+              {downloadsBySource && (
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-3 mb-6">
+                    <Download className="w-5 h-5 text-indigo-600" />
+                    <h2 className="text-xl font-bold">App Downloads by Source</h2>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Landing Page</p>
+                        <p className="text-2xl font-bold text-blue-600">{downloadsBySource.landing}</p>
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {downloadsBySource.total > 0 
+                          ? `${((downloadsBySource.landing / downloadsBySource.total) * 100).toFixed(1)}%`
+                          : '0%'}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Account Page</p>
+                        <p className="text-2xl font-bold text-green-600">{downloadsBySource.account}</p>
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {downloadsBySource.total > 0 
+                          ? `${((downloadsBySource.account / downloadsBySource.total) * 100).toFixed(1)}%`
+                          : '0%'}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                      <div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Success Page</p>
+                        <p className="text-2xl font-bold text-purple-600">{downloadsBySource.success}</p>
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {downloadsBySource.total > 0 
+                          ? `${((downloadsBySource.success / downloadsBySource.total) * 100).toFixed(1)}%`
+                          : '0%'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Top Team Members */}

@@ -1,0 +1,17 @@
+rules_version = '2';
+
+// Firebase Storage Security Rules
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow public read access to the downloads folder (for DMG file)
+    match /downloads/{allPaths=**} {
+      allow read: if true;  // Anyone can download
+      allow write: if false; // Only admins can upload via Firebase Console
+    }
+    
+    // Deny all other access by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

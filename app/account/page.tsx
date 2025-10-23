@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
+import { downloadApp } from '@/lib/downloadApp';
 import Header from '@/components/ui/Header';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
@@ -18,7 +19,8 @@ import {
   LayoutGrid,
   LogOut,
   CreditCard,
-  Settings
+  Settings,
+  Download
 } from 'lucide-react';
 
 export default function AccountPage() {
@@ -31,6 +33,8 @@ export default function AccountPage() {
   const hasSynced = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [syncSuccess, setSyncSuccess] = useState<string | null>(null);
+  const [downloadLoading, setDownloadLoading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -186,6 +190,19 @@ export default function AccountPage() {
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      setDownloadLoading(true);
+      setDownloadError(null);
+      await downloadApp('account', user?.uid);
+    } catch (error) {
+      console.error('Download error:', error);
+      setDownloadError('Failed to download. Please try again.');
+    } finally {
+      setDownloadLoading(false);
+    }
+  };
+
   // Read the actual 'credits' field from Firestore (synced by Stripe webhook)
   const creditsAvailable = userProfile.credits || 0;
   const creditsUsed = (userProfile.creditsTotal || 0) - creditsAvailable;
@@ -287,6 +304,49 @@ export default function AccountPage() {
                 </div>
               </div>
 
+            </div>
+
+            {/* Download App Section */}
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 border-2 border-blue-200 dark:border-blue-800">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl font-bold mb-1">Download Jam AI</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Get the desktop app for the best experience
+                  </p>
+                </div>
+                <Download className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              </div>
+
+              {downloadError && (
+                <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-red-600 dark:text-red-400 text-sm">{downloadError}</p>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-gray-100">Jam AI for macOS</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Version 1.0 • ~60 MB • M1+ Compatible</p>
+                  </div>
+                  <Button
+                    variant="primary"
+                    onClick={handleDownload}
+                    disabled={downloadLoading}
+                    className="min-w-[150px]"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    {downloadLoading ? 'Preparing...' : 'Download'}
+                  </Button>
+                </div>
+
+                <div className="pt-4 border-t border-blue-200 dark:border-blue-800">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <strong>System Requirements:</strong> macOS 11.0 or later with Apple Silicon (M1, M2, M3) or Intel processor
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Subscription Management Section - Only show for paid plans */}

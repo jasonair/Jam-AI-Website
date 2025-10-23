@@ -444,3 +444,105 @@ export async function getTotalProjectsCreated(): Promise<number> {
   }
 }
 
+/**
+ * Get total app downloads count
+ */
+export async function getTotalAppDownloads(): Promise<number> {
+  try {
+    const docRef = doc(db, 'analytics', 'global_stats');
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      return docSnap.data().totalAppDownloads || 0;
+    }
+    
+    return 0;
+  } catch (error) {
+    console.error('Error fetching total app downloads:', error);
+    return 0;
+  }
+}
+
+/**
+ * Download source breakdown
+ */
+export interface DownloadsBySource {
+  landing: number;
+  account: number;
+  success: number;
+  total: number;
+}
+
+/**
+ * Get app downloads breakdown by source
+ */
+export async function getDownloadsBySource(): Promise<DownloadsBySource> {
+  try {
+    const downloadsRef = collection(db, 'analytics_app_downloads');
+    const snapshot = await getDocs(downloadsRef);
+    
+    const breakdown: DownloadsBySource = {
+      landing: 0,
+      account: 0,
+      success: 0,
+      total: 0,
+    };
+    
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      const source = data.source as string;
+      
+      breakdown.total++;
+      
+      if (source === 'landing') {
+        breakdown.landing++;
+      } else if (source === 'account') {
+        breakdown.account++;
+      } else if (source === 'success') {
+        breakdown.success++;
+      }
+    });
+    
+    return breakdown;
+  } catch (error) {
+    console.error('Error getting downloads by source:', error);
+    return {
+      landing: 0,
+      account: 0,
+      success: 0,
+      total: 0,
+    };
+  }
+}
+
+/**
+ * Track an app download
+ * @param source - Where the download originated from (e.g., 'landing', 'account', 'success')
+ * @param userId - Optional user ID if user is authenticated
+ */
+export async function trackAppDownload(source: string, userId?: string): Promise<void> {
+  try {
+    const { addDoc, collection, doc, setDoc, increment, serverTimestamp } = await import('firebase/firestore');
+    
+    // Log individual download event
+    await addDoc(collection(db, 'analytics_app_downloads'), {
+      source,
+      userId: userId || null,
+      timestamp: serverTimestamp(),
+      userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : null,
+    });
+
+    // Update global stats counter (creates document if it doesn't exist)
+    const globalStatsRef = doc(db, 'analytics', 'global_stats');
+    await setDoc(globalStatsRef, {
+      totalAppDownloads: increment(1),
+      lastDownloadAt: serverTimestamp(),
+    }, { merge: true });
+
+    console.log(`✅ App download tracked from ${source}`);
+  } catch (error) {
+    console.error('Error tracking app download:', error);
+    // Don't throw - we don't want download tracking to block the actual download
+  }
+}
+
