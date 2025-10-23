@@ -5,7 +5,9 @@ import {
   getDocs, 
   Timestamp,
   orderBy,
-  limit as firestoreLimit
+  limit as firestoreLimit,
+  doc,
+  getDoc
 } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -424,4 +426,21 @@ export async function getAccountActivitySummary(days: number = 30): Promise<Acco
     childNodes,
     aiTeamMembersUsed: uniqueTeamMembers.size,
   };
+}
+
+export async function getTotalProjectsCreated(): Promise<number> {
+  try {
+    const docRef = doc(db, 'analytics', 'global_stats');
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      return docSnap.data().totalProjectsCreated || 0;
+    }
+    
+    console.log('No global_stats document found!');
+    return 0;
+  } catch (error) {
+    console.error('Error fetching total projects created:', error);
+    return 0;
+  }
 }

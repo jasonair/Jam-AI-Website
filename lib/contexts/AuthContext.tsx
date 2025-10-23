@@ -37,6 +37,7 @@ export interface UserProfile {
     totalChildNodesCreated?: number;
     totalExpandActions?: number;
     totalTeamMembersUsed?: number;
+    totalProjectsCreated?: number;
   };
 }
 
@@ -115,6 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           totalChildNodesCreated: 0,
           totalExpandActions: 0,
           totalTeamMembersUsed: 0,
+          totalProjectsCreated: 0,
         },
       };
 

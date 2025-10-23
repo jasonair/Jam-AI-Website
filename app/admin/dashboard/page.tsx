@@ -11,7 +11,8 @@ import {
   LogOut,
   Calendar,
   BarChart3,
-  PieChart as PieChartIcon
+  PieChart as PieChartIcon,
+  LayoutGrid
 } from 'lucide-react';
 import { useAdminAuth } from '@/lib/hooks/useAdminAuth';
 import {
@@ -23,6 +24,7 @@ import {
   getActiveUsersCount,
   getTotalUsersCount,
   getAccountActivitySummary,
+  getTotalProjectsCreated,
   TokenUsageSummary,
   TeamMemberUsage,
   PlanDistribution,
@@ -54,6 +56,7 @@ export default function AdminDashboardPage() {
   const [activeUsers, setActiveUsers] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
   const [accountActivity, setAccountActivity] = useState<AccountActivitySummary | null>(null);
+  const [totalProjects, setTotalProjects] = useState(0);
 
   useEffect(() => {
     if (!loading && !isAdmin) {
@@ -72,7 +75,8 @@ export default function AdminDashboardPage() {
         roleCostsData,
         activeUsersData,
         totalUsersData,
-        accountActivityData
+        accountActivityData,
+        totalProjectsData
       ] = await Promise.all([
         getTokenUsageSummary(dateRange),
         getMostUsedTeamMembers(10),
@@ -81,7 +85,8 @@ export default function AdminDashboardPage() {
         getCostByTeamMember(dateRange),
         getActiveUsersCount(dateRange),
         getTotalUsersCount(),
-        getAccountActivitySummary(dateRange)
+        getAccountActivitySummary(dateRange),
+        getTotalProjectsCreated()
       ]);
 
       setTokenUsage(tokenData);
@@ -92,6 +97,7 @@ export default function AdminDashboardPage() {
       setActiveUsers(activeUsersData);
       setTotalUsers(totalUsersData);
       setAccountActivity(accountActivityData);
+      setTotalProjects(totalProjectsData);
     } catch (error) {
       console.error('Failed to load analytics:', error);
     } finally {
@@ -214,7 +220,7 @@ export default function AdminDashboardPage() {
             {/* Key Metrics */}
             <div>
               <h2 className="text-xl font-bold mb-4">Key Metrics</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                 <StatCard
                   title="Total Cost"
                   value={`$${tokenUsage?.totalCost.toFixed(2) || '0.00'}`}
@@ -242,6 +248,13 @@ export default function AdminDashboardPage() {
                   icon={Activity}
                   iconColor="text-orange-600"
                   subtitle={`${((tokenUsage?.totalTokens || 0) / 1000000).toFixed(2)}M tokens`}
+                />
+                <StatCard
+                  title="Total Projects Created"
+                  value={totalProjects.toLocaleString()}
+                  icon={LayoutGrid}
+                  iconColor="text-teal-600"
+                  subtitle="All-time"
                 />
               </div>
             </div>

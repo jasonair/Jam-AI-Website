@@ -13,8 +13,9 @@
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-
 admin.initializeApp();
+
+const firestore = admin.firestore();
 
 /**
  * TEMPORARY FUNCTION - Set First Admin
@@ -225,5 +226,36 @@ exports.listAdmins = functions.https.onCall(async (data, context) => {
     };
   } catch (error) {
     throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+/**
+ * Scheduled Function - Aggregate Total Projects Created
+ * 
+ * Runs every 24 hours to calculate the total number of projects created across all users.
+ * Stores the result in a dedicated analytics document for efficient retrieval.
+ */
+exports.aggregateTotalProjects = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
+  try {
+    const usersSnapshot = await firestore.collection('users').get();
+    
+    let totalProjects = 0;
+    usersSnapshot.forEach(doc => {
+      const userData = doc.data();
+      if (userData.metadata && userData.metadata.totalProjectsCreated) {
+        totalProjects += userData.metadata.totalProjectsCreated;
+      }
+    });
+
+    await firestore.collection('analytics').doc('global_stats').set({
+      totalProjectsCreated: totalProjects,
+      lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    console.log(`✅ Successfully aggregated total projects: ${totalProjects}`);
+    return null;
+  } catch (error) {
+    console.error('❌ Error aggregating total projects:', error);
+    throw new functions.https.HttpsError('internal', 'Failed to aggregate project data.');
   }
 });
