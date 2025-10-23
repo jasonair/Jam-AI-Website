@@ -188,9 +188,15 @@ export default function AccountPage() {
   // Read the actual 'credits' field from Firestore (synced by Stripe webhook)
   const creditsAvailable = userProfile.credits || 0;
   const creditsUsed = (userProfile.creditsTotal || 0) - creditsAvailable;
-  const creditsPercentage = userProfile.creditsTotal 
-    ? (creditsUsed / userProfile.creditsTotal) * 100 
+  const creditsPercentage = userProfile.creditsTotal
+    ? (creditsUsed / userProfile.creditsTotal) * 100
     : 0;
+
+  const getProgressBarColor = (percentage: number) => {
+    if (percentage >= 90) return 'bg-red-500';
+    if (percentage >= 75) return 'bg-orange-500';
+    return 'bg-green-500';
+  };
 
   // Calculate trial info if applicable
   const trialDaysRemaining = userProfile.trialEndDate 
@@ -342,17 +348,17 @@ export default function AccountPage() {
                   <span className="text-4xl font-bold">
                     {creditsAvailable.toLocaleString()} / {userProfile.creditsTotal.toLocaleString()}
                   </span>
-                  <span className="text-gray-600 dark:text-gray-400">available</span>
+                  <span className="text-gray-600 dark:text-gray-400">left</span>
                   <span className="ml-auto text-gray-600 dark:text-gray-400">
-                    {creditsUsed} used
+                    {creditsUsed.toLocaleString()} used
                   </span>
                 </div>
 
                 {/* Progress Bar */}
                 <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-green-500 transition-all duration-500"
-                    style={{ width: `${100 - creditsPercentage}%` }}
+                    className={`h-full ${getProgressBarColor(creditsPercentage)} transition-all duration-500`}
+                    style={{ width: `${creditsPercentage}%` }}
                   />
                 </div>
               </div>
