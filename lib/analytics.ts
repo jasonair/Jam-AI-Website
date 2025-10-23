@@ -70,6 +70,14 @@ export interface GenerationTypeBreakdown {
   autoDescription: number;
 }
 
+export interface AccountActivitySummary {
+  nodesCreated: number;
+  aiMessages: number;
+  childNodes: number;
+  expandActions: number;
+  aiTeamMembersUsed: number;
+}
+
 export async function getTokenUsageSummary(days: number = 30): Promise<TokenUsageSummary> {
   const now = new Date();
   const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
@@ -350,4 +358,58 @@ export async function getActiveUsersCount(days: number = 30): Promise<number> {
   });
   
   return uniqueUsers.size;
+}
+
+export async function getAccountActivitySummary(days: number = 30): Promise<AccountActivitySummary> {
+  const now = new Date();
+  const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+
+  // 1. Get AI Messages and Expand Actions from token usage
+  const tokenUsageQuery = query(
+    collection(db, 'analytics_token_usage'),
+    where('timestamp', '>=', Timestamp.fromDate(startDate))
+  );
+  const tokenUsageSnapshot = await getDocs(tokenUsageQuery);
+  let aiMessages = 0;
+  let expandActions = 0;
+  tokenUsageSnapshot.forEach(doc => {
+    const data = doc.data();
+    if (data.generationType === 'chat') {
+      aiMessages++;
+    }
+    if (data.generationType === 'expand') {
+      expandActions++;
+    }
+  });
+
+  // 2. Get AI Team Members Used
+  const teamMemberQuery = query(
+    collection(db, 'analytics_team_member_usage')
+  );
+  const teamMemberSnapshot = await getDocs(teamMemberQuery);
+  const uniqueTeamMembers = new Set<string>();
+  teamMemberSnapshot.forEach(doc => {
+    uniqueTeamMembers.add(doc.data().roleId);
+  });
+
+  // 3. Get Nodes Created and Child Nodes (lifetime stats)
+  const usersRef = collection(db, 'users');
+  const usersSnapshot = await getDocs(usersRef);
+  let nodesCreated = 0;
+  let childNodes = 0;
+  usersSnapshot.forEach(doc => {
+    const data = doc.data();
+    if (data.metadata) {
+      nodesCreated += data.metadata.totalNodesCreated || 0;
+      childNodes += data.metadata.totalChildNodesCreated || 0;
+    }
+  });
+
+  return {
+    aiMessages,
+    expandActions,
+    nodesCreated,
+    childNodes,
+    aiTeamMembersUsed: uniqueTeamMembers.size,
+  };
 }

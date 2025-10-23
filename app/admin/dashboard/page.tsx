@@ -23,12 +23,14 @@ import {
   getCostByTeamMember,
   getActiveUsersCount,
   getTotalUsersCount,
+  getAccountActivitySummary,
   TokenUsageSummary,
   TeamMemberUsage,
   PlanDistribution,
   DailyTrend,
   GenerationTypeBreakdown,
-  RoleCost
+  RoleCost,
+  AccountActivitySummary
 } from '@/lib/analytics';
 import StatCard from '@/components/admin/StatCard';
 import LineChart from '@/components/admin/LineChart';
@@ -54,6 +56,7 @@ export default function AdminDashboardPage() {
   const [roleCosts, setRoleCosts] = useState<RoleCost[]>([]);
   const [activeUsers, setActiveUsers] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
+  const [accountActivity, setAccountActivity] = useState<AccountActivitySummary | null>(null);
 
   useEffect(() => {
     if (!loading && !isAdmin) {
@@ -72,7 +75,8 @@ export default function AdminDashboardPage() {
         genTypesData,
         roleCostsData,
         activeUsersData,
-        totalUsersData
+        totalUsersData,
+        accountActivityData
       ] = await Promise.all([
         getTokenUsageSummary(dateRange),
         getMostUsedTeamMembers(10),
@@ -81,7 +85,8 @@ export default function AdminDashboardPage() {
         getGenerationTypeBreakdown(dateRange),
         getCostByTeamMember(dateRange),
         getActiveUsersCount(dateRange),
-        getTotalUsersCount()
+        getTotalUsersCount(),
+        getAccountActivitySummary(dateRange)
       ]);
 
       setTokenUsage(tokenData);
@@ -92,6 +97,7 @@ export default function AdminDashboardPage() {
       setRoleCosts(roleCostsData);
       setActiveUsers(activeUsersData);
       setTotalUsers(totalUsersData);
+      setAccountActivity(accountActivityData);
     } catch (error) {
       console.error('Failed to load analytics:', error);
     } finally {
@@ -134,6 +140,14 @@ export default function AdminDashboardPage() {
     { name: 'Expand', value: genTypes.expand },
     { name: 'Auto Title', value: genTypes.autoTitle },
     { name: 'Auto Description', value: genTypes.autoDescription }
+  ] : [];
+
+  const accountActivityChartData = accountActivity ? [
+    { name: 'Nodes Created', value: accountActivity.nodesCreated },
+    { name: 'AI Messages', value: accountActivity.aiMessages },
+    { name: 'Child Nodes', value: accountActivity.childNodes },
+    { name: 'Expand Actions', value: accountActivity.expandActions },
+    { name: 'AI Team Members', value: accountActivity.aiTeamMembersUsed },
   ] : [];
 
   const topTeamMembersData = teamMembers.slice(0, 10).map(tm => ({
@@ -279,6 +293,50 @@ export default function AdminDashboardPage() {
               </div>
             )}
 
+            {/* Account Activity */}
+            {accountActivity && (
+              <div>
+                <h2 className="text-xl font-bold mb-4">Account Activity</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                  <StatCard
+                    title="Nodes Created"
+                    value={accountActivity.nodesCreated.toLocaleString()}
+                    icon={Zap}
+                    iconColor="text-blue-600"
+                    subtitle="Lifetime"
+                  />
+                  <StatCard
+                    title="AI Messages"
+                    value={accountActivity.aiMessages.toLocaleString()}
+                    icon={Zap}
+                    iconColor="text-purple-600"
+                    subtitle={`Last ${dateRange} days`}
+                  />
+                  <StatCard
+                    title="Child Nodes"
+                    value={accountActivity.childNodes.toLocaleString()}
+                    icon={Zap}
+                    iconColor="text-green-600"
+                    subtitle="Lifetime"
+                  />
+                  <StatCard
+                    title="Expand Actions"
+                    value={accountActivity.expandActions.toLocaleString()}
+                    icon={Zap}
+                    iconColor="text-orange-600"
+                    subtitle={`Last ${dateRange} days`}
+                  />
+                  <StatCard
+                    title="AI Team Members Used"
+                    value={accountActivity.aiTeamMembersUsed.toLocaleString()}
+                    icon={Users}
+                    iconColor="text-accent"
+                    subtitle="Lifetime"
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Daily Trends */}
             <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3 mb-6">
@@ -301,7 +359,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Charts Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Plan Distribution */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-3 mb-6">
@@ -324,6 +382,22 @@ export default function AdminDashboardPage() {
                 <PieChart
                   data={genTypeChartData}
                   colors={['#3b82f6', '#10b981', '#f59e0b', '#ef4444']}
+                  height={300}
+                />
+              </div>
+
+              {/* Account Activity Breakdown */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-6">
+                  <BarChart3 className="w-5 h-5 text-accent" />
+                  <h2 className="text-xl font-bold">Account Activity</h2>
+                </div>
+                <BarChart
+                  data={accountActivityChartData}
+                  xKey="name"
+                  bars={[
+                    { key: 'value', color: '#8b5cf6', name: 'Count' }
+                  ]}
                   height={300}
                 />
               </div>
