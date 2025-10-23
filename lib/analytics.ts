@@ -29,7 +29,6 @@ export interface PlanDistribution {
   planCounts: {
     trial: number;
     free: number;
-    premium: number;
     pro: number;
     teams: number;
     enterprise: number;
@@ -145,7 +144,6 @@ export async function getPlanDistribution(): Promise<PlanDistribution> {
   const planCounts = {
     trial: 0,
     free: 0,
-    premium: 0,
     pro: 0,
     teams: 0,
     enterprise: 0
@@ -172,9 +170,9 @@ export async function getPlanDistribution(): Promise<PlanDistribution> {
     planCounts,
     totalUsers: snapshot.size,
     trialUsers,
-    totalPaidUsers: planCounts.premium + planCounts.pro + planCounts.teams + planCounts.enterprise,
+    totalPaidUsers: planCounts.pro + planCounts.teams + planCounts.enterprise,
     totalCreditsUsed,
-    estimatedRevenue: (planCounts.premium * 9.99) + (planCounts.pro * 29.99) + (planCounts.teams * 30.00) + (planCounts.enterprise * 199.99) // Assuming enterprise price
+    estimatedRevenue: (planCounts.pro * 29.99) + (planCounts.teams * 30.00) + (planCounts.enterprise * 199.99) // Assuming enterprise price
   };
 }
 

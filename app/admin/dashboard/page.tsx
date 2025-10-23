@@ -125,7 +125,6 @@ export default function AdminDashboardPage() {
   const planChartData = planDist
     ? [
         { name: 'Free', value: planDist.planCounts.free },
-        { name: 'Premium', value: planDist.planCounts.premium },
         { name: 'Pro', value: planDist.planCounts.pro },
         { name: 'Teams', value: planDist.planCounts.teams },
         { name: 'Enterprise', value: planDist.planCounts.enterprise },
@@ -252,7 +251,7 @@ export default function AdminDashboardPage() {
             {planDist && (
               <div>
                 <h2 className="text-xl font-bold mb-4">Revenue & Plans</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                   <StatCard
                     title="Estimated MRR"
                     value={`$${planDist.estimatedRevenue.toFixed(2)}`}
@@ -274,12 +273,14 @@ export default function AdminDashboardPage() {
                     iconColor="text-yellow-600"
                     subtitle="On 14-day trial"
                   />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   <StatCard
-                    title="Premium Users"
-                    value={planDist.planCounts.premium}
+                    title="Free Users"
+                    value={planDist.planCounts.free}
                     icon={Users}
-                    iconColor="text-blue-600"
-                    subtitle="$9.99/month"
+                    iconColor="text-gray-500"
+                    subtitle="Free Plan"
                   />
                   <StatCard
                     title="Pro Users"
