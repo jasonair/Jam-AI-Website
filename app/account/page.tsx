@@ -244,7 +244,7 @@ export default function AccountPage() {
       name: 'Pro',
       credits: 1000,
       teamMembers: 12,
-      features: ['All experience levels', 'Gemini 2.5 Flash-Lite + Claude Instant', 'Advanced web search', 'Image generation', 'Priority support'],
+      features: ['All experience levels', 'Gemini 2.5 Flashlight plus Gemini 2.5 Pro', 'Perplexity search', 'Image generation', 'Priority support'],
       isCurrent: currentPlan === 'pro',
       highlighted: true,
     },
@@ -500,7 +500,7 @@ export default function AccountPage() {
                 <div>
                   <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
                     <LayoutGrid className="w-5 h-5" />
-                    <span className="text-sm">Projects Created</span>
+                    <span className="text-sm">Jams Created</span>
                   </div>
                   <p className="text-4xl font-bold">{userProfile.metadata?.totalProjectsCreated || 0}</p>
                 </div>

@@ -262,7 +262,7 @@ export default function AdminDashboardPage() {
                   subtitle={`${((tokenUsage?.totalTokens || 0) / 1000000).toFixed(2)}M tokens`}
                 />
                 <StatCard
-                  title="Total Projects Created"
+                  title="Total Jams Created"
                   value={totalProjects.toLocaleString()}
                   icon={LayoutGrid}
                   iconColor="text-teal-600"
