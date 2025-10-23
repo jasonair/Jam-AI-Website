@@ -60,19 +60,19 @@ export default function SignInPage() {
                   <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
                     <span className="text-white font-bold">1</span>
                   </div>
-                  <span>Access all your projects</span>
+                  <span>View your account activity and usage stats</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
                     <span className="text-white font-bold">2</span>
                   </div>
-                  <span>Collaborate with your team</span>
+                  <span>Manage your subscription and billing</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
                     <span className="text-white font-bold">3</span>
                   </div>
-                  <span>Unlock premium features</span>
+                  <span>Earn bonus credits by inviting friends</span>
                 </div>
               </div>
               <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
