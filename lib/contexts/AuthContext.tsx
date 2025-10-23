@@ -11,7 +11,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
 /**
@@ -23,18 +23,20 @@ export interface UserProfile {
   displayName: string;
   photoURL?: string;
   plan: 'trial' | 'free' | 'pro' | 'teams' | 'enterprise';
+  credits?: number; // Current available credits (synced from Stripe)
   creditsTotal: number;
   creditsUsed: number;
   teamMembers: number;
   teamMembersLimit: number;
   trialEndDate?: string;
   createdAt: string;
-  usage: {
-    nodesCreated: number;
-    aiMessages: number;
-    notesCreated: number;
-    childNodes: number;
-    expandActions: number;
+  metadata?: {
+    totalNodesCreated?: number;
+    totalMessagesGenerated?: number;
+    totalNotesCreated?: number;
+    totalChildNodesCreated?: number;
+    totalExpandActions?: number;
+    totalTeamMembersUsed?: number;
   };
 }
 
@@ -86,55 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   /**
-   * Fetch user profile from Firestore
-   */
-  const fetchUserProfile = async (uid: string): Promise<UserProfile | null> => {
-    try {
-      if (!db) {
-        console.error('Firestore is not initialized');
-        return null;
-      }
-      const userDoc = await getDoc(doc(db, 'users', uid));
-      if (userDoc.exists()) {
-        const profileData = userDoc.data() as UserProfile;
-        console.log('✓ Profile found for user:', uid);
-        console.log('Profile data:', profileData);
-        
-        // Check if profile needs migration (missing new fields)
-        if (!profileData.creditsTotal || !profileData.usage) {
-          console.log('⚠️ Profile needs migration, updating...');
-          const planDetails = getPlanDetails(profileData.plan || 'trial');
-          const updatedProfile: UserProfile = {
-            ...profileData,
-            creditsTotal: profileData.creditsTotal || planDetails.creditsTotal,
-            creditsUsed: profileData.creditsUsed || 0,
-            teamMembers: profileData.teamMembers || 0,
-            teamMembersLimit: profileData.teamMembersLimit || planDetails.teamMembersLimit,
-            usage: profileData.usage || {
-              nodesCreated: 0,
-              aiMessages: 0,
-              notesCreated: 0,
-              childNodes: 0,
-              expandActions: 0,
-            },
-          };
-          await setDoc(doc(db, 'users', uid), updatedProfile, { merge: true });
-          console.log('✓ Profile migrated successfully');
-          return updatedProfile;
-        }
-        
-        return profileData;
-      }
-      console.log('✗ Profile not found for user:', uid);
-      return null;
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-      return null;
-    }
-  };
-
-  /**
-   * Create initial user profile
+   * Create initial user profile in Firestore.
    */
   const createUserProfile = async (user: User, displayName: string): Promise<void> => {
     try {
@@ -156,19 +110,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         teamMembersLimit: planDetails.teamMembersLimit,
         trialEndDate: getTrialEndDate(),
         createdAt: new Date().toISOString(),
-        usage: {
-          nodesCreated: 0,
-          aiMessages: 0,
-          notesCreated: 0,
-          childNodes: 0,
-          expandActions: 0,
+        metadata: {
+          totalNodesCreated: 0,
+          totalMessagesGenerated: 0,
+          totalNotesCreated: 0,
+          totalChildNodesCreated: 0,
+          totalExpandActions: 0,
+          totalTeamMembersUsed: 0,
         },
       };
 
       console.log('Creating profile for user:', user.email, profile);
       await setDoc(doc(db, 'users', user.uid), profile);
       console.log('✓ Profile created successfully');
-      setUserProfile(profile);
     } catch (error) {
       console.error('✗ Error creating user profile:', error);
       throw error;
@@ -176,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   /**
-   * Sign up with email and password
+   * Sign up with email and password.
    */
   const signUp = async (email: string, password: string, displayName: string) => {
     try {
@@ -190,7 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   /**
-   * Sign in with email and password
+   * Sign in with email and password.
    */
   const signIn = async (email: string, password: string) => {
     try {
@@ -202,7 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   /**
-   * Sign in with Google
+   * Sign in with Google.
    */
   const signInWithGoogle = async () => {
     try {
@@ -210,8 +164,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const result = await signInWithPopup(auth, provider);
       
       // Check if user profile exists, if not create one
-      const profile = await fetchUserProfile(result.user.uid);
-      if (!profile) {
+      const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+      if (!userDoc.exists()) {
         await createUserProfile(result.user, result.user.displayName || 'User');
       }
     } catch (error: any) {
@@ -221,13 +175,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   /**
-   * Sign out
+   * Sign out.
    */
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
-      setUser(null);
-      setUserProfile(null);
     } catch (error: any) {
       console.error('Sign out error:', error);
       throw new Error(error.message || 'Failed to sign out');
@@ -235,49 +187,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   /**
-   * Refresh user profile from Firestore
+   * Refresh user profile from Firestore.
+   * This function is kept for manual refresh actions, e.g., after a Stripe sync.
    */
   const refreshUserProfile = async () => {
     if (user) {
-      const profile = await fetchUserProfile(user.uid);
-      setUserProfile(profile);
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        setUserProfile(userDoc.data() as UserProfile);
+      }
     }
   };
 
   /**
-   * Listen to auth state changes
+   * Listen to auth state changes and user profile updates in real-time.
    */
   useEffect(() => {
-    // Check if Firebase is properly initialized
-    if (!auth) {
-      console.error('Firebase Auth is not initialized. Please check your .env.local file.');
+    if (!auth || !db) {
+      console.error('Firebase Auth or Firestore is not initialized.');
       setLoading(false);
       return;
     }
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const authUnsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      
-      if (user) {
-        let profile = await fetchUserProfile(user.uid);
-        
-        // If profile doesn't exist, create it (for existing users or Google sign-ins)
-        if (!profile) {
-          console.log('Profile not found, creating new profile for user:', user.email);
-          await createUserProfile(user, user.displayName || 'User');
-          profile = await fetchUserProfile(user.uid);
-        }
-        
-        setUserProfile(profile);
-      } else {
-        setUserProfile(null);
-      }
-      
       setLoading(false);
     });
 
-    return unsubscribe;
-  }, []);
+    let profileUnsubscribe: (() => void) | undefined;
+
+    if (user) {
+      const userDocRef = doc(db, 'users', user.uid);
+      profileUnsubscribe = onSnapshot(userDocRef, (doc) => {
+        if (doc.exists()) {
+          setUserProfile(doc.data() as UserProfile);
+        } else {
+          // Handle case where user exists in Auth but not Firestore
+          console.log('User profile not found in Firestore, creating one...');
+          createUserProfile(user, user.displayName || 'User');
+        }
+      });
+    } else {
+      // User is signed out, clear profile
+      setUserProfile(null);
+    }
+
+    return () => {
+      authUnsubscribe();
+      if (profileUnsubscribe) {
+        profileUnsubscribe();
+      }
+    };
+  }, [user]);
 
   const value: AuthContextType = {
     user,

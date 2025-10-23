@@ -36,16 +36,8 @@ export default function AccountPage() {
     }
   }, [loading, user, router]);
 
-  useEffect(() => {
-    // Refresh profile on mount
-    if (user) {
-      console.log('User found, fetching profile...', user.email);
-      refreshUserProfile();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
 
-  if (loading || !userProfile || !userProfile.creditsTotal) {
+  if (loading || !userProfile) {
     return (
       <>
         <Header />
@@ -183,10 +175,11 @@ export default function AccountPage() {
     }
   };
 
-  // Calculate credits info with safe defaults
-  const creditsAvailable = (userProfile.creditsTotal || 0) - (userProfile.creditsUsed || 0);
+  // Read the actual 'credits' field from Firestore (synced by Stripe webhook)
+  const creditsAvailable = userProfile.credits || 0;
+  const creditsUsed = (userProfile.creditsTotal || 0) - creditsAvailable;
   const creditsPercentage = userProfile.creditsTotal 
-    ? ((userProfile.creditsUsed || 0) / userProfile.creditsTotal) * 100 
+    ? (creditsUsed / userProfile.creditsTotal) * 100 
     : 0;
 
   // Calculate trial info if applicable
@@ -378,7 +371,7 @@ export default function AccountPage() {
                   </span>
                   <span className="text-gray-600 dark:text-gray-400">available</span>
                   <span className="ml-auto text-gray-600 dark:text-gray-400">
-                    {userProfile.creditsUsed || 0} used
+                    {creditsUsed} used
                   </span>
                 </div>
 
@@ -475,7 +468,7 @@ export default function AccountPage() {
                     <FileText className="w-5 h-5" />
                     <span className="text-sm">Nodes Created</span>
                   </div>
-                  <p className="text-4xl font-bold">{userProfile.usage?.nodesCreated || 0}</p>
+                  <p className="text-4xl font-bold">{userProfile.metadata?.totalNodesCreated || 0}</p>
                 </div>
 
                 {/* AI Messages */}
@@ -484,7 +477,7 @@ export default function AccountPage() {
                     <MessageSquare className="w-5 h-5" />
                     <span className="text-sm">AI Messages</span>
                   </div>
-                  <p className="text-4xl font-bold">{userProfile.usage?.aiMessages || 0}</p>
+                  <p className="text-4xl font-bold">{userProfile.metadata?.totalMessagesGenerated || 0}</p>
                 </div>
 
                 {/* Notes Created */}
@@ -493,7 +486,7 @@ export default function AccountPage() {
                     <FileText className="w-5 h-5" />
                     <span className="text-sm">Notes Created</span>
                   </div>
-                  <p className="text-4xl font-bold">{userProfile.usage?.notesCreated || 0}</p>
+                  <p className="text-4xl font-bold">{userProfile.metadata?.totalNotesCreated || 0}</p>
                 </div>
 
                 {/* Child Nodes */}
@@ -502,7 +495,7 @@ export default function AccountPage() {
                     <GitBranch className="w-5 h-5" />
                     <span className="text-sm">Child Nodes</span>
                   </div>
-                  <p className="text-4xl font-bold">{userProfile.usage?.childNodes || 0}</p>
+                  <p className="text-4xl font-bold">{userProfile.metadata?.totalChildNodesCreated || 0}</p>
                 </div>
 
                 {/* Expand Actions */}
@@ -511,16 +504,16 @@ export default function AccountPage() {
                     <Maximize2 className="w-5 h-5" />
                     <span className="text-sm">Expand Actions</span>
                   </div>
-                  <p className="text-4xl font-bold">{userProfile.usage?.expandActions || 0}</p>
+                  <p className="text-4xl font-bold">{userProfile.metadata?.totalExpandActions || 0}</p>
                 </div>
 
-                {/* AI Team Members */}
+                {/* AI Team Members Used */}
                 <div>
                   <div className="flex items-center gap-2 mb-2 text-gray-600 dark:text-gray-400">
                     <Users className="w-5 h-5" />
-                    <span className="text-sm">AI Team Members</span>
+                    <span className="text-sm">AI Team Members Used</span>
                   </div>
-                  <p className="text-4xl font-bold">{userProfile.teamMembers || 0}</p>
+                  <p className="text-4xl font-bold">{userProfile.metadata?.totalTeamMembersUsed || 0}</p>
                 </div>
               </div>
             </div>
