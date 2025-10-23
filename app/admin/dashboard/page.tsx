@@ -19,7 +19,6 @@ import {
   getMostUsedTeamMembers,
   getPlanDistribution,
   getDailyTrends,
-  getGenerationTypeBreakdown,
   getCostByTeamMember,
   getActiveUsersCount,
   getTotalUsersCount,
@@ -28,7 +27,6 @@ import {
   TeamMemberUsage,
   PlanDistribution,
   DailyTrend,
-  GenerationTypeBreakdown,
   RoleCost,
   AccountActivitySummary
 } from '@/lib/analytics';
@@ -52,7 +50,6 @@ export default function AdminDashboardPage() {
   const [teamMembers, setTeamMembers] = useState<TeamMemberUsage[]>([]);
   const [planDist, setPlanDist] = useState<PlanDistribution | null>(null);
   const [dailyTrends, setDailyTrends] = useState<DailyTrend[]>([]);
-  const [genTypes, setGenTypes] = useState<GenerationTypeBreakdown | null>(null);
   const [roleCosts, setRoleCosts] = useState<RoleCost[]>([]);
   const [activeUsers, setActiveUsers] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
@@ -72,7 +69,6 @@ export default function AdminDashboardPage() {
         teamData,
         planData,
         trendsData,
-        genTypesData,
         roleCostsData,
         activeUsersData,
         totalUsersData,
@@ -82,7 +78,6 @@ export default function AdminDashboardPage() {
         getMostUsedTeamMembers(10),
         getPlanDistribution(),
         getDailyTrends(dateRange),
-        getGenerationTypeBreakdown(dateRange),
         getCostByTeamMember(dateRange),
         getActiveUsersCount(dateRange),
         getTotalUsersCount(),
@@ -93,7 +88,6 @@ export default function AdminDashboardPage() {
       setTeamMembers(teamData);
       setPlanDist(planData);
       setDailyTrends(trendsData);
-      setGenTypes(genTypesData);
       setRoleCosts(roleCostsData);
       setActiveUsers(activeUsersData);
       setTotalUsers(totalUsersData);
@@ -128,21 +122,17 @@ export default function AdminDashboardPage() {
     );
   }
 
-  const planChartData = planDist ? [
-    { name: 'Trial', value: planDist.planCounts.trial },
-    { name: 'Free', value: planDist.planCounts.free },
-    { name: 'Premium', value: planDist.planCounts.premium },
-    { name: 'Pro', value: planDist.planCounts.pro },
-    { name: 'Teams', value: planDist.planCounts.teams },
-    { name: 'Enterprise', value: planDist.planCounts.enterprise },
-  ] : [];
+  const planChartData = planDist
+    ? [
+        { name: 'Free', value: planDist.planCounts.free },
+        { name: 'Premium', value: planDist.planCounts.premium },
+        { name: 'Pro', value: planDist.planCounts.pro },
+        { name: 'Teams', value: planDist.planCounts.teams },
+        { name: 'Enterprise', value: planDist.planCounts.enterprise },
+        { name: 'Trial', value: planDist.trialUsers },
+      ].filter(p => p.value > 0)
+    : [];
 
-  const genTypeChartData = genTypes ? [
-    { name: 'Chat', value: genTypes.chat },
-    { name: 'Expand', value: genTypes.expand },
-    { name: 'Auto Title', value: genTypes.autoTitle },
-    { name: 'Auto Description', value: genTypes.autoDescription }
-  ] : [];
 
   const accountActivityChartData = accountActivity ? [
     { name: 'Nodes Created', value: accountActivity.nodesCreated },
@@ -278,6 +268,13 @@ export default function AdminDashboardPage() {
                     subtitle={`${((planDist.totalPaidUsers / planDist.totalUsers) * 100).toFixed(1)}% conversion`}
                   />
                   <StatCard
+                    title="Trial Users"
+                    value={planDist.trialUsers}
+                    icon={Users}
+                    iconColor="text-yellow-600"
+                    subtitle="On 14-day trial"
+                  />
+                  <StatCard
                     title="Premium Users"
                     value={planDist.planCounts.premium}
                     icon={Users}
@@ -296,14 +293,14 @@ export default function AdminDashboardPage() {
                     value={planDist.planCounts.teams}
                     icon={Users}
                     iconColor="text-red-600"
-                    subtitle="$99.99/month"
+                    subtitle="$30.00/month"
                   />
                   <StatCard
                     title="Enterprise Users"
                     value={planDist.planCounts.enterprise}
                     icon={Users}
                     iconColor="text-yellow-600"
-                    subtitle="$299.99/month"
+                    subtitle="$199.99/month"
                   />
                 </div>
               </div>
@@ -359,23 +356,22 @@ export default function AdminDashboardPage() {
                 <Calendar className="w-5 h-5 text-accent" />
                 <h2 className="text-xl font-bold">Daily Trends</h2>
               </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Daily totals for key metrics over the selected period.</p>
               <LineChart
-                data={dailyTrends.map(d => ({
-                  ...d,
-                  date: format(new Date(d.date), 'MMM dd')
-                }))}
+                data={dailyTrends}
                 xKey="date"
                 lines={[
-                  { key: 'totalCost', color: '#10b981', name: 'Cost ($)' },
-                  { key: 'totalGenerations', color: '#8b5cf6', name: 'Generations' },
-                  { key: 'activeUsers', color: '#3b82f6', name: 'Active Users' }
+                  { key: 'activeUsers', color: '#3b82f6', name: 'Active Users' },
+                  { key: 'totalCost', color: '#8b5cf6', name: 'Cost ($)' },
+                  { key: 'totalGenerations', color: '#10b981', name: 'Generations' },
+                  { key: 'newSignups', color: '#f59e0b', name: 'New Signups' }
                 ]}
-                height={350}
+                height={300}
               />
             </div>
 
             {/* Charts Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Plan Distribution */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-3 mb-6">
@@ -385,22 +381,6 @@ export default function AdminDashboardPage() {
                 <PieChart
                   data={planChartData}
                   colors={['#f59e0b', '#6b7280', '#3b82f6', '#8b5cf6', '#ef4444', '#f97316']}
-                  height={300}
-                />
-              </div>
-
-              {/* Generation Types */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-3 mb-6">
-                  <BarChart3 className="w-5 h-5 text-accent" />
-                  <h2 className="text-xl font-bold">Generation Types</h2>
-                </div>
-                <BarChart
-                  data={genTypeChartData}
-                  xKey="name"
-                  bars={[
-                    { key: 'value', color: '#8b5cf6', name: 'Count' }
-                  ]}
                   height={300}
                 />
               </div>

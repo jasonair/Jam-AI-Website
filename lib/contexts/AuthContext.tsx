@@ -22,7 +22,7 @@ export interface UserProfile {
   email: string;
   displayName: string;
   photoURL?: string;
-  plan: 'trial' | 'free' | 'pro' | 'teams' | 'enterprise';
+  plan: 'free' | 'pro' | 'teams' | 'enterprise';
   credits?: number; // Current available credits (synced from Stripe)
   creditsTotal: number;
   creditsUsed: number;
@@ -58,8 +58,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
  */
 const getPlanDetails = (planType: UserProfile['plan']) => {
   switch (planType) {
-    case 'trial':
-      return { creditsTotal: 1000, teamMembersLimit: 3 };
     case 'free':
       return { creditsTotal: 25, teamMembersLimit: 3 };
     case 'pro':
@@ -74,11 +72,11 @@ const getPlanDetails = (planType: UserProfile['plan']) => {
 };
 
 /**
- * Calculate trial end date (7 days from now)
+ * Calculate trial end date (14 days from now)
  */
 const getTrialEndDate = () => {
   const date = new Date();
-  date.setDate(date.getDate() + 7);
+  date.setDate(date.getDate() + 14);
   return date.toISOString();
 };
 
@@ -97,13 +95,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error('Firestore not initialized');
       }
 
-      const planDetails = getPlanDetails('trial');
+      const planDetails = getPlanDetails('free');
       const profile: UserProfile = {
         uid: user.uid,
         email: user.email!,
         displayName,
         photoURL: user.photoURL || undefined,
-        plan: 'trial',
+        plan: 'free',
         creditsTotal: planDetails.creditsTotal,
         creditsUsed: 0,
         teamMembers: 0,

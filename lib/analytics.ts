@@ -34,6 +34,7 @@ export interface PlanDistribution {
     teams: number;
     enterprise: number;
   };
+  trialUsers: number;
   totalUsers: number;
   totalPaidUsers: number;
   totalCreditsUsed: number;
@@ -63,14 +64,9 @@ export interface DailyTrend {
   totalCost: number;
   totalGenerations: number;
   activeUsers: number;
+  newSignups: number;
 }
 
-export interface GenerationTypeBreakdown {
-  chat: number;
-  expand: number;
-  autoTitle: number;
-  autoDescription: number;
-}
 
 export interface AccountActivitySummary {
   nodesCreated: number;
@@ -154,24 +150,31 @@ export async function getPlanDistribution(): Promise<PlanDistribution> {
     teams: 0,
     enterprise: 0
   };
+  let trialUsers = 0;
   
   let totalCreditsUsed = 0;
   
   snapshot.forEach(doc => {
     const data = doc.data();
     const plan = (data.plan || 'free').toLowerCase();
-    if (plan in planCounts) {
-      planCounts[plan as keyof typeof planCounts]++;
+    if (data.trialEndDate && new Date(data.trialEndDate) > new Date()) {
+      trialUsers++;
+    } else {
+      if (plan in planCounts) {
+        planCounts[plan as keyof typeof planCounts]++;
+      }
     }
     totalCreditsUsed += data.creditsUsedThisMonth || 0;
   });
   
+  planCounts.trial = trialUsers;
   return {
     planCounts,
     totalUsers: snapshot.size,
+    trialUsers,
     totalPaidUsers: planCounts.premium + planCounts.pro + planCounts.teams + planCounts.enterprise,
     totalCreditsUsed,
-    estimatedRevenue: (planCounts.premium * 9.99) + (planCounts.pro * 29.99) + (planCounts.teams * 99.99) + (planCounts.enterprise * 299.99) // Assuming prices for teams and enterprise
+    estimatedRevenue: (planCounts.premium * 9.99) + (planCounts.pro * 29.99) + (planCounts.teams * 30.00) + (planCounts.enterprise * 199.99) // Assuming enterprise price
   };
 }
 
@@ -274,7 +277,8 @@ export async function getDailyTrends(days: number = 30): Promise<DailyTrend[]> {
       totalTokens: 0,
       totalCost: 0,
       totalGenerations: 0,
-      activeUsers: snapshot.size
+      activeUsers: snapshot.size,
+      newSignups: 0
     };
     
     snapshot.forEach(doc => {
@@ -286,38 +290,44 @@ export async function getDailyTrends(days: number = 30): Promise<DailyTrend[]> {
     
     dailyData.push(dayTotal);
   }
+
+  // Get new signups
+  const usersRef = collection(db, 'users');
+  const usersSnapshot = await getDocs(usersRef);
+  usersSnapshot.forEach(doc => {
+    const data = doc.data();
+    if (!data.createdAt) return;
+
+    let createdAtDate: Date;
+
+    if (typeof data.createdAt === 'string') {
+      createdAtDate = new Date(data.createdAt);
+    } else if (data.createdAt && typeof data.createdAt.toDate === 'function') {
+      // Firestore Timestamp object
+      createdAtDate = data.createdAt.toDate();
+    } else if (data.createdAt && typeof data.createdAt._seconds === 'number') {
+      // Plain object with _seconds and _nanoseconds
+      createdAtDate = new Date(data.createdAt._seconds * 1000);
+    } else {
+      // Skip if the format is not recognized
+      return;
+    }
+
+    // Check for invalid date
+    if (isNaN(createdAtDate.getTime())) {
+      return;
+    }
+
+    const createdAt = createdAtDate.toISOString().split('T')[0];
+    const trend = dailyData.find(d => d.date === createdAt);
+    if (trend) {
+      trend.newSignups++;
+    }
+  });
   
   return dailyData;
 }
 
-export async function getGenerationTypeBreakdown(days: number = 30): Promise<GenerationTypeBreakdown> {
-  const now = new Date();
-  const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
-  
-  const q = query(
-    collection(db, 'analytics_token_usage'),
-    where('timestamp', '>=', Timestamp.fromDate(startDate))
-  );
-  
-  const snapshot = await getDocs(q);
-  
-  const breakdown: GenerationTypeBreakdown = {
-    chat: 0,
-    expand: 0,
-    autoTitle: 0,
-    autoDescription: 0
-  };
-  
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    const type = data.generationType || 'chat';
-    if (type in breakdown) {
-      breakdown[type as keyof GenerationTypeBreakdown]++;
-    }
-  });
-  
-  return breakdown;
-}
 
 export async function getRecentProjectActivity(limit: number = 20) {
   const q = query(
