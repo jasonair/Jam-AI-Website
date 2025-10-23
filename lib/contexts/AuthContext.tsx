@@ -45,9 +45,9 @@ interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
   loading: boolean;
-  signUp: (email: string, password: string, displayName: string) => Promise<void>;
+  signUp: (email: string, password: string, displayName: string) => Promise<User>;
   signIn: (email: string, password: string) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
+  signInWithGoogle: () => Promise<{ user: User; isNewUser: boolean }>;
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
 }
@@ -137,6 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName });
       await createUserProfile(userCredential.user, displayName);
+      return userCredential.user; // Return the user object
     } catch (error: any) {
       console.error('Sign up error:', error);
       throw new Error(error.message || 'Failed to sign up');
@@ -165,9 +166,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Check if user profile exists, if not create one
       const userDoc = await getDoc(doc(db, 'users', result.user.uid));
-      if (!userDoc.exists()) {
+      const isNewUser = !userDoc.exists();
+      
+      if (isNewUser) {
         await createUserProfile(result.user, result.user.displayName || 'User');
       }
+      
+      return { user: result.user, isNewUser };
     } catch (error: any) {
       console.error('Google sign in error:', error);
       throw new Error(error.message || 'Failed to sign in with Google');

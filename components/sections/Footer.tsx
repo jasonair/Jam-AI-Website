@@ -32,6 +32,7 @@ export default function Footer() {
                 alt="Jam AI Logo" 
                 width={40} 
                 height={40}
+                style={{ height: 'auto' }}
                 className="object-contain"
               />
             </div>

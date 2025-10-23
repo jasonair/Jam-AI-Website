@@ -25,6 +25,7 @@ export default function Header() {
               alt="Jam AI Logo" 
               width={32} 
               height={32}
+              style={{ height: 'auto' }}
               className="object-contain"
             />
           </Link>

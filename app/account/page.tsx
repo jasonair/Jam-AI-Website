@@ -7,6 +7,7 @@ import Header from '@/components/ui/Header';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
+import ReferralProgram from '@/components/ReferralProgram';
 import { 
   User as UserIcon, 
   FileText, 
@@ -371,6 +372,9 @@ export default function AccountPage() {
                 )}
               </div>
             </div>
+
+            {/* Referral Program Section */}
+            <ReferralProgram userId={user!.uid} userEmail={user!.email || ''} />
 
             {/* Account Activity Section */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">

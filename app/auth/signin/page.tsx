@@ -61,6 +61,7 @@ export default function SignInPage() {
                 alt="Jam AI Logo" 
                 width={64} 
                 height={64}
+                style={{ height: 'auto' }}
                 className="object-contain mb-6"
               />
               <h1 className="text-4xl font-bold mb-4">Welcome Back</h1>

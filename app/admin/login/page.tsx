@@ -50,6 +50,7 @@ export default function AdminLoginPage() {
                 alt="Jam AI Logo" 
                 width={64} 
                 height={64}
+                style={{ height: 'auto' }}
                 className="object-contain"
               />
             </div>

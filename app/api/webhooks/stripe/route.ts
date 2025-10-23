@@ -4,6 +4,7 @@ import { initAdmin } from '@/lib/firebaseAdmin';
 import { db } from '@/lib/firebaseAdmin';
 import Stripe from 'stripe';
 import { SubscriptionCreateData } from '@/lib/types/subscription';
+import { REFERRAL_CREDIT_AMOUNT, REFERRER_CREDIT_AMOUNT } from '@/lib/referrals';
 
 // Initialize Firebase Admin
 initAdmin();
@@ -272,4 +273,90 @@ async function createOrUpdateSubscription(
   );
 
   console.log(`Updated user ${userId} to plan ${determinedPlanId} with ${creditsTotal} credits`);
+
+  // Check if this is a new paid subscription and handle referral credits
+  // Only process referral credits for new subscriptions (when existingSubscriptionsSnapshot is empty)
+  const isNewSubscription = existingSubscriptionsSnapshot.empty;
+  if (determinedPlanId !== 'free' && isNewSubscription) {
+    await handleReferralCredits(userId);
+  }
+}
+
+/**
+ * Handle referral credits when a referred user subscribes to a paid plan
+ */
+async function handleReferralCredits(userId: string) {
+  try {
+    // Check if this user was referred
+    const redemptionsSnapshot = await db()
+      .collection('referral_redemptions')
+      .where('referredUserId', '==', userId)
+      .where('creditsAwarded', '==', false)
+      .limit(1)
+      .get();
+
+    if (redemptionsSnapshot.empty) {
+      console.log('No pending referral redemptions found for user:', userId);
+      return;
+    }
+
+    const redemptionDoc = redemptionsSnapshot.docs[0];
+    const redemptionData = redemptionDoc.data();
+    const referrerId = redemptionData.referrerId;
+
+    console.log(`Processing referral credits for user ${userId} (referred by ${referrerId})`);
+
+    // Get current user data to calculate new credit total
+    const referredUserDoc = await db().collection('users').doc(userId).get();
+    const referredUserData = referredUserDoc.data();
+    
+    // Award credits to the referred user (250 credits)
+    const referredUserNewCredits = (referredUserData?.credits || referredUserData?.creditsTotal || 0) + REFERRAL_CREDIT_AMOUNT;
+    await db().collection('users').doc(userId).update({
+      credits: referredUserNewCredits,
+      updatedAt: new Date(),
+    });
+    console.log(`Awarded ${REFERRAL_CREDIT_AMOUNT} credits to referred user ${userId}`);
+
+    // Get referrer data
+    const referrerDoc = await db().collection('users').doc(referrerId).get();
+    const referrerData = referrerDoc.data();
+    
+    // Award credits to the referrer (250 credits)
+    const referrerNewCredits = (referrerData?.credits || referrerData?.creditsTotal || 0) + REFERRER_CREDIT_AMOUNT;
+    await db().collection('users').doc(referrerId).update({
+      credits: referrerNewCredits,
+      updatedAt: new Date(),
+    });
+    console.log(`Awarded ${REFERRER_CREDIT_AMOUNT} credits to referrer ${referrerId}`);
+
+    // Update redemption record
+    await redemptionDoc.ref.update({
+      creditsAwarded: true,
+      creditsAwardedAt: new Date().toISOString(),
+      subscriptionStartedAt: new Date().toISOString(),
+      status: 'completed',
+    });
+
+    // Update referral stats
+    const referralsSnapshot = await db()
+      .collection('referrals')
+      .where('referrerId', '==', referrerId)
+      .limit(1)
+      .get();
+
+    if (!referralsSnapshot.empty) {
+      const referralDoc = referralsSnapshot.docs[0];
+      const referralData = referralDoc.data();
+      await referralDoc.ref.update({
+        successfulReferrals: (referralData.successfulReferrals || 0) + 1,
+        totalCreditsEarned: (referralData.totalCreditsEarned || 0) + REFERRER_CREDIT_AMOUNT,
+      });
+    }
+
+    console.log('Referral credits processed successfully');
+  } catch (error) {
+    console.error('Error handling referral credits:', error);
+    // Don't throw error to prevent webhook from failing
+  }
 }

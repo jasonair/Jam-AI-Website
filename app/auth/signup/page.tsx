@@ -1,26 +1,62 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
-import { Mail, Lock, User } from 'lucide-react';
+import { Mail, Lock, User, Gift } from 'lucide-react';
 
 export default function SignUpPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { signUp, signInWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [referralValid, setReferralValid] = useState<boolean | null>(null);
+  const [referrerEmail, setReferrerEmail] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     displayName: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
+
+  // Check for referral code in URL on component mount
+  useEffect(() => {
+    const code = searchParams.get('referral_code');
+    if (code) {
+      validateReferralCode(code);
+    }
+  }, [searchParams]);
+
+  const validateReferralCode = async (code: string) => {
+    try {
+      const response = await fetch('/api/referral/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ referralCode: code }),
+      });
+
+      const data = await response.json();
+      if (data.valid) {
+        setReferralCode(code);
+        setReferralValid(true);
+        setReferrerEmail(data.referrerEmail);
+      } else {
+        setReferralValid(false);
+      }
+    } catch (err) {
+      console.error('Error validating referral code:', err);
+      setReferralValid(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +77,32 @@ export default function SignUpPage() {
     }
 
     try {
-      await signUp(formData.email, formData.password, formData.displayName);
+      const newUser = await signUp(formData.email, formData.password, formData.displayName);
+      
+      // Redeem referral code if provided
+      if (referralCode && referralValid && newUser) {
+        try {
+          const response = await fetch('/api/referral/redeem', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              referralCode,
+              referredUserId: newUser.uid,
+              referredUserEmail: formData.email,
+            }),
+          });
+          
+          if (response.ok) {
+            console.log('Referral code redeemed successfully');
+          }
+        } catch (referralErr) {
+          console.error('Error redeeming referral code:', referralErr);
+          // Don't block signup if referral redemption fails
+        }
+      }
+      
       router.push('/auth/success');
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
@@ -55,7 +116,32 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      await signInWithGoogle();
+      const { user: newUser, isNewUser } = await signInWithGoogle();
+      
+      // Redeem referral code if this is a new user and a code was provided
+      if (isNewUser && referralCode && referralValid && newUser) {
+        try {
+          const response = await fetch('/api/referral/redeem', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              referralCode,
+              referredUserId: newUser.uid,
+              referredUserEmail: newUser.email,
+            }),
+          });
+          
+          if (response.ok) {
+            console.log('Referral code redeemed successfully');
+          }
+        } catch (referralErr) {
+          console.error('Error redeeming referral code:', referralErr);
+          // Don't block signup if referral redemption fails
+        }
+      }
+      
       router.push('/auth/success');
     } catch (err: any) {
       setError(err.message || 'Failed to sign in with Google');
@@ -76,6 +162,7 @@ export default function SignUpPage() {
                 alt="Jam AI Logo" 
                 width={64} 
                 height={64}
+                style={{ height: 'auto' }}
                 className="object-contain mb-6"
               />
               <h1 className="text-4xl font-bold mb-4">Join Jam AI</h1>
@@ -118,6 +205,31 @@ export default function SignUpPage() {
 
             {/* Sign Up Form */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+              {/* Referral Code Banner */}
+              {referralValid && (
+                <div className="mb-6 p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <Gift className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold text-purple-900 dark:text-purple-100">
+                        Referral code applied! 🎉
+                      </p>
+                      <p className="text-xs text-purple-700 dark:text-purple-300 mt-1">
+                        You'll receive <strong>250 bonus credits</strong> when you subscribe to a paid plan.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {referralValid === false && (
+                <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                    Invalid referral code. You can still sign up normally.
+                  </p>
+                </div>
+              )}
+
               {error && (
                 <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                   <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
