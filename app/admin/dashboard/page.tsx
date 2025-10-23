@@ -128,7 +128,6 @@ export default function AdminDashboardPage() {
         { name: 'Pro', value: planDist.planCounts.pro },
         { name: 'Teams', value: planDist.planCounts.teams },
         { name: 'Enterprise', value: planDist.planCounts.enterprise },
-        { name: 'Trial', value: planDist.trialUsers },
       ].filter(p => p.value > 0)
     : [];
 
