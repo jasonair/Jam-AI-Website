@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
-import { ThemeProvider } from '@/lib/contexts/ThemeContext';
+import { ThemeProvider } from 'next-themes';
 
 export const metadata: Metadata = {
   title: 'Jam AI - Turn chat into a canvas your brain can follow',
@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>
       </body>

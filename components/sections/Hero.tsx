@@ -64,7 +64,7 @@ export default function Hero() {
                   className="min-w-[200px]" 
                   onClick={handleGetStarted}
                 >
-                  {user ? 'Go to Account' : 'Start Free Trial'}
+                  {user ? 'Go to Account' : 'Start for Free'}
                 </Button>
                 {!user && (
                   <Button 

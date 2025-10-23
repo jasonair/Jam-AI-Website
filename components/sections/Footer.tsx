@@ -1,4 +1,8 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useTheme } from 'next-themes';
 import Container from '@/components/ui/Container';
 
 const footerLinks = {
@@ -20,6 +24,16 @@ const footerLinks = {
 };
 
 export default function Footer() {
+  const { theme } = useTheme();
+  const [logoSrc, setLogoSrc] = useState('/images/jam-ai-logo-blue.svg');
+
+  useEffect(() => {
+    // A delay ensures the theme is read correctly on initial load
+    const timer = setTimeout(() => {
+      setLogoSrc(theme === 'dark' ? '/images/jam-ai-logo-white.svg' : '/images/jam-ai-logo-blue.svg');
+    }, 10);
+    return () => clearTimeout(timer);
+  }, [theme]);
   return (
     <footer className="bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
       <Container>
@@ -28,7 +42,7 @@ export default function Footer() {
           <div className="mb-12">
             <div className="flex items-center gap-2 mb-4">
               <Image 
-                src="/images/Jam AI logo.png" 
+                src={logoSrc} 
                 alt="Jam AI Logo" 
                 width={40} 
                 height={40}

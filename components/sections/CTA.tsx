@@ -83,7 +83,7 @@ export default function CTA() {
                   className="min-w-[220px] border-2 border-white text-white hover:bg-white/10"
                   onClick={handleStartTrial}
                 >
-                  {user ? 'Go to Account' : 'Start Free Trial'}
+                  {user ? 'Go to Account' : 'Start for Free'}
                 </Button>
               </div>
             )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -8,11 +8,18 @@ import { useAuth } from '@/lib/contexts/AuthContext';
 import Button from './Button';
 import ThemeToggle from './ThemeToggle';
 import { Menu, X, User } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 export default function Header() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { theme } = useTheme();
+  const [logoSrc, setLogoSrc] = useState('/images/jam-ai-logo-blue.svg');
+
+  useEffect(() => {
+    setLogoSrc(theme === 'dark' ? '/images/jam-ai-logo-white.svg' : '/images/jam-ai-logo-blue.svg');
+  }, [theme]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800">
@@ -21,7 +28,7 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 text-2xl font-bold text-accent">
             <Image 
-              src="/images/Jam AI logo.png" 
+              src={logoSrc} 
               alt="Jam AI Logo" 
               width={32} 
               height={32}
