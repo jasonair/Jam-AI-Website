@@ -259,3 +259,4 @@ exports.aggregateTotalProjects = functions.pubsub.schedule('every 24 hours').onR
     throw new functions.https.HttpsError('internal', 'Failed to aggregate project data.');
   }
 });
+

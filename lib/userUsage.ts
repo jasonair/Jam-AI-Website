@@ -13,6 +13,7 @@ export interface UsageMetrics {
   childNodes?: number;
   expandActions?: number;
   creditsUsed?: number;
+  totalProjectsCreated?: number;
 }
 
 /**
@@ -44,6 +45,9 @@ export const updateUserUsage = async (uid: string, metrics: UsageMetrics): Promi
     }
     if (metrics.creditsUsed) {
       updates.creditsUsed = increment(metrics.creditsUsed);
+    }
+    if (metrics.totalProjectsCreated) {
+      updates['metadata.totalProjectsCreated'] = increment(metrics.totalProjectsCreated);
     }
 
     await updateDoc(userRef, updates);
