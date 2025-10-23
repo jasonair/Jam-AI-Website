@@ -43,6 +43,7 @@ import PieChart from '@/components/admin/PieChart';
 import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
 import { format } from 'date-fns';
+import BetaUsersManager from '@/components/admin/BetaUsersManager';
 
 export default function AdminDashboardPage() {
   const { isAdmin, loading, signOut, user } = useAdminAuth();
@@ -546,7 +547,12 @@ export default function AdminDashboardPage() {
         )}
 
         {/* Back to Home */}
-        <div className="mt-8 text-center pb-8">
+        {/* Beta Users Manager */}
+            <div className="mt-8">
+              <BetaUsersManager />
+            </div>
+
+            <div className="mt-8 text-center pb-8">
           <a
             href="/"
             className="text-accent hover:text-accent-hover font-medium transition-colors duration-200"

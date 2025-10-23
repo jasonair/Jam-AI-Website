@@ -1,38 +1,40 @@
-import type { Metadata } from 'next';
-import './globals.css';
-import { AuthProvider } from '@/lib/contexts/AuthContext';
+'use client';
+
+import { usePathname } from 'next/navigation';
 import { ThemeProvider } from 'next-themes';
+import { AuthProvider, useAuth } from '@/lib/contexts/AuthContext';
+import BetaGate from '@/components/sections/BetaGate';
+import './globals.css';
 
-export const metadata: Metadata = {
-  title: 'Jam AI - Turn chat into a canvas your brain can follow',
-  description: 'Jam AI maps every conversation into nodes you can branch, connect, and ship from — no more endless scroll.',
-  keywords: ['AI', 'chat', 'mind map', 'productivity', 'creative thinking'],
-  authors: [{ name: 'Jam AI' }],
-  icons: {
-    icon: [
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-    ],
-    shortcut: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
-  },
-  openGraph: {
-    title: 'Jam AI - Turn chat into a canvas your brain can follow',
-    description: 'Jam AI maps every conversation into nodes you can branch, connect, and ship from — no more endless scroll.',
-    type: 'website',
-  },
-};
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+
+
+function RootContent({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const { user, loading } = useAuth();
+  const isBetaGateActive = process.env.NEXT_PUBLIC_BETA_GATE_ACTIVE === 'true';
+  const isSpecialRoute = pathname.startsWith('/admin') || pathname.startsWith('/auth');
+
+  // Show beta gate only if:
+  // 1. Beta gate is active
+  // 2. Not a special route (/admin or /auth)
+  // 3. User is not authenticated (once authenticated, they have beta access)
+  // 4. Not loading (to avoid flashing beta gate during initial auth check)
+  if (isBetaGateActive && !isSpecialRoute && !user && !loading) {
+    return <BetaGate />;
+  }
+
+  return <>{children}</>;
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <RootContent>{children}</RootContent>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

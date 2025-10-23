@@ -7,9 +7,11 @@ import {
   orderBy,
   limit as firestoreLimit,
   doc,
-  getDoc
+  getDoc,
+  updateDoc
 } from 'firebase/firestore';
 import { db } from './firebase';
+import { BetaSignup } from '@/components/admin/BetaUsersManager';
 
 export interface TokenUsageSummary {
   totalInputTokens: number;
@@ -520,6 +522,22 @@ export async function getDownloadsBySource(): Promise<DownloadsBySource> {
  * @param source - Where the download originated from (e.g., 'landing', 'account', 'success')
  * @param userId - Optional user ID if user is authenticated
  */
+export async function getBetaSignups(): Promise<BetaSignup[]> {
+  const signupsCollection = collection(db, 'beta_signups');
+  const q = query(signupsCollection, orderBy('createdAt', 'desc'));
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as BetaSignup[];
+}
+
+export async function updateBetaSignupStatus(id: string, status: 'approved'): Promise<void> {
+  const signupDoc = doc(db, 'beta_signups', id);
+  await updateDoc(signupDoc, { status });
+}
+
 export async function trackAppDownload(source: string, userId?: string): Promise<void> {
   try {
     const { addDoc, collection, doc, setDoc, increment, serverTimestamp } = await import('firebase/firestore');
