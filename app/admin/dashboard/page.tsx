@@ -132,7 +132,9 @@ export default function AdminDashboardPage() {
     { name: 'Trial', value: planDist.planCounts.trial },
     { name: 'Free', value: planDist.planCounts.free },
     { name: 'Premium', value: planDist.planCounts.premium },
-    { name: 'Pro', value: planDist.planCounts.pro }
+    { name: 'Pro', value: planDist.planCounts.pro },
+    { name: 'Teams', value: planDist.planCounts.teams },
+    { name: 'Enterprise', value: planDist.planCounts.enterprise },
   ] : [];
 
   const genTypeChartData = genTypes ? [
@@ -260,7 +262,7 @@ export default function AdminDashboardPage() {
             {planDist && (
               <div>
                 <h2 className="text-xl font-bold mb-4">Revenue & Plans</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
                   <StatCard
                     title="Estimated MRR"
                     value={`$${planDist.estimatedRevenue.toFixed(2)}`}
@@ -288,6 +290,20 @@ export default function AdminDashboardPage() {
                     icon={Users}
                     iconColor="text-purple-600"
                     subtitle="$29.99/month"
+                  />
+                  <StatCard
+                    title="Teams Users"
+                    value={planDist.planCounts.teams}
+                    icon={Users}
+                    iconColor="text-red-600"
+                    subtitle="$99.99/month"
+                  />
+                  <StatCard
+                    title="Enterprise Users"
+                    value={planDist.planCounts.enterprise}
+                    icon={Users}
+                    iconColor="text-yellow-600"
+                    subtitle="$299.99/month"
                   />
                 </div>
               </div>
@@ -368,7 +384,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <PieChart
                   data={planChartData}
-                  colors={['#f59e0b', '#6b7280', '#3b82f6', '#8b5cf6']}
+                  colors={['#f59e0b', '#6b7280', '#3b82f6', '#8b5cf6', '#ef4444', '#f97316']}
                   height={300}
                 />
               </div>
@@ -376,12 +392,15 @@ export default function AdminDashboardPage() {
               {/* Generation Types */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-3 mb-6">
-                  <PieChartIcon className="w-5 h-5 text-accent" />
+                  <BarChart3 className="w-5 h-5 text-accent" />
                   <h2 className="text-xl font-bold">Generation Types</h2>
                 </div>
-                <PieChart
+                <BarChart
                   data={genTypeChartData}
-                  colors={['#3b82f6', '#10b981', '#f59e0b', '#ef4444']}
+                  xKey="name"
+                  bars={[
+                    { key: 'value', color: '#8b5cf6', name: 'Count' }
+                  ]}
                   height={300}
                 />
               </div>
