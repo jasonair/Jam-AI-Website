@@ -11,7 +11,7 @@ export async function getAppDownloadURL(): Promise<string> {
     // Reference to the DMG file in Firebase Storage
     // The file should be uploaded to: downloads/JamAI.dmg
     const dmgRef = ref(storage, 'downloads/JamAI.dmg');
-    
+
     // Get the download URL
     const url = await getDownloadURL(dmgRef);
     return url;
@@ -30,10 +30,10 @@ export async function getAppDownloadURL(): Promise<string> {
 export async function downloadApp(source: string = 'unknown', userId?: string): Promise<void> {
   try {
     const downloadURL = await getAppDownloadURL();
-    
+
     // Track the download (non-blocking)
     trackAppDownload(source, userId);
-    
+
     // Open download in new tab
     window.open(downloadURL, '_blank');
   } catch (error) {
@@ -49,12 +49,12 @@ export async function getAppInfo() {
   try {
     const dmgRef = ref(storage, 'downloads/JamAI.dmg');
     const url = await getDownloadURL(dmgRef);
-    
+
     return {
       url,
       filename: 'JamAI.dmg',
       size: '~60 MB',
-      platform: 'macOS (M1+)',
+      platform: 'macOS (Apple Silicon)',
     };
   } catch (error) {
     console.error('Error getting app info:', error);

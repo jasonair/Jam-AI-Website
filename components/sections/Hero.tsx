@@ -92,7 +92,7 @@ export default function Hero() {
 
           {/* Tagline */}
           <p className="text-sm text-gray-500 dark:text-gray-500 pt-4">
-            macOS (M1+) • Built for creative thinkers
+            macOS (Apple Silicon) • Built for creative thinkers
           </p>
         </div>
           </Container>

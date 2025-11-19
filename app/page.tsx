@@ -1,6 +1,7 @@
 import Header from '@/components/ui/Header';
 import Hero from '@/components/sections/Hero';
 import Problem from '@/components/sections/Problem';
+import Canvas from '@/components/sections/Canvas';
 import Features from '@/components/sections/Features';
 import Team from '@/components/sections/Team';
 import HowItWorks from '@/components/sections/HowItWorks';
@@ -19,6 +20,7 @@ export default function Home() {
       <main className="min-h-screen">
         <Hero />
         <Problem />
+        <Canvas />
         <Team />
         <Features />
         <HowItWorks />
