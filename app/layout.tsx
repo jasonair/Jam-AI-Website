@@ -1,41 +1,40 @@
-'use client';
-
-import { usePathname } from 'next/navigation';
-import { ThemeProvider } from 'next-themes';
-import { AuthProvider, useAuth } from '@/lib/contexts/AuthContext';
-import BetaGate from '@/components/sections/BetaGate';
+import type { Metadata } from 'next';
+import ClientLayout from '@/components/ClientLayout';
 import './globals.css';
 
-
-
-
-function RootContent({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const { user, loading } = useAuth();
-  const isBetaGateActive = process.env.NEXT_PUBLIC_BETA_GATE_ACTIVE === 'true';
-  const isSpecialRoute = pathname.startsWith('/admin') || pathname.startsWith('/auth');
-
-  // Show beta gate only if:
-  // 1. Beta gate is active
-  // 2. Not a special route (/admin or /auth)
-  // 3. User is not authenticated (once authenticated, they have beta access)
-  // 4. Not loading (to avoid flashing beta gate during initial auth check)
-  if (isBetaGateActive && !isSpecialRoute && !user && !loading) {
-    return <BetaGate />;
-  }
-
-  return <>{children}</>;
-}
+export const metadata: Metadata = {
+  metadataBase: new URL('https://www.usejamai.com'),
+  title: 'Jam AI - Build your AI dream team',
+  description: 'Name your AI specialists, choose their expertise, and chat with your whole team — all in Jam AI.',
+  openGraph: {
+    title: 'Jam AI - Build your AI dream team',
+    description: 'Name your AI specialists, choose their expertise, and chat with your whole team — all in Jam AI.',
+    url: 'https://www.usejamai.com',
+    siteName: 'Jam AI',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Jam AI Preview',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Jam AI - Build your AI dream team',
+    description: 'Name your AI specialists, choose their expertise, and chat with your whole team — all in Jam AI.',
+    images: ['/og-image.png'],
+  },
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <AuthProvider>
-            <RootContent>{children}</RootContent>
-          </AuthProvider>
-        </ThemeProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
