@@ -43,14 +43,20 @@ function initAdmin() {
   }
 }
 
-// Initialize immediately when module loads
-initAdmin();
+// Initialize immediately when module loads - REMOVED to prevent build errors
+// initAdmin();
 
 // Export the Firestore database getter
-export const db = () => admin.firestore();
+export const db = () => {
+  initAdmin();
+  return admin.firestore();
+};
 
 // Export the auth getter
-export const auth = () => admin.auth();
+export const auth = () => {
+  initAdmin();
+  return admin.auth();
+};
 
 // Re-export initAdmin for manual initialization if needed
 export { initAdmin };
