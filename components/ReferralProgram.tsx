@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Copy, Gift, Check, ExternalLink } from 'lucide-react';
 import Button from '@/components/ui/Button';
 
@@ -15,11 +15,7 @@ export default function ReferralProgram({ userId, userEmail }: ReferralProgramPr
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    generateReferralCode();
-  }, [userId]);
-
-  const generateReferralCode = async () => {
+  const generateReferralCode = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -61,7 +57,13 @@ export default function ReferralProgram({ userId, userEmail }: ReferralProgramPr
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId, userEmail]);
+
+  useEffect(() => {
+    generateReferralCode();
+  }, [userId, generateReferralCode]);
+
+
 
   const getReferralLink = () => {
     if (!referralCode) return '';

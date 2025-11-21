@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { getIdToken } from 'firebase/auth';
@@ -11,7 +11,7 @@ import Button from '@/components/ui/Button';
 import { openMacAppWithAuth, isMacOS } from '@/lib/deepLink';
 import { ExternalLink, Download, CheckCircle } from 'lucide-react';
 
-export default function AuthSuccessPage() {
+function AuthSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
@@ -204,5 +204,17 @@ export default function AuthSuccessPage() {
         </Container>
       </Section>
     </main>
+  );
+}
+
+export default function AuthSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+      </div>
+    }>
+      <AuthSuccessContent />
+    </Suspense>
   );
 }

@@ -16,7 +16,7 @@ export default function Canvas() {
               </span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Break free from linear conversations. Jam AI's canvas lets you organize your thoughts spatially, 
+              Break free from linear conversations. Jam AI&apos;s canvas lets you organize your thoughts spatially,
               connect ideas visually, and never lose track of important insights.
             </p>
           </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -26,7 +26,7 @@ function PasswordRequirement({ met, text }: { met: boolean; text: string }) {
   );
 }
 
-export default function SignUpPage() {
+function SignUpContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { signUp } = useAuth();
@@ -106,7 +106,7 @@ export default function SignUpPage() {
 
     try {
       const newUser = await signUp(formData.email, formData.password, formData.displayName);
-      
+
       // Redeem referral code if provided
       if (referralCode && referralValid && newUser) {
         try {
@@ -121,7 +121,7 @@ export default function SignUpPage() {
               referredUserEmail: formData.email,
             }),
           });
-          
+
           if (response.ok) {
             console.log('Referral code redeemed successfully');
           }
@@ -130,7 +130,7 @@ export default function SignUpPage() {
           // Don't block signup if referral redemption fails
         }
       }
-      
+
       router.push('/auth/success');
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
@@ -147,10 +147,10 @@ export default function SignUpPage() {
         <div className="w-full md:w-1/2 bg-gradient-to-br from-blue-600 to-blue-800 text-white p-12 flex flex-col justify-center">
           <div className="max-w-md mx-auto w-full">
             <div className="mb-8">
-              <Image 
-                src="/images/jam-ai-logo-white.svg" 
-                alt="Jam AI Logo" 
-                width={64} 
+              <Image
+                src="/images/jam-ai-logo-white.svg"
+                alt="Jam AI Logo"
+                width={64}
                 height={64}
                 style={{ height: 'auto' }}
                 className="object-contain mb-6"
@@ -182,7 +182,7 @@ export default function SignUpPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Right Column - Form */}
         <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-gray-900">
           <div className="w-full max-w-md">
@@ -205,7 +205,7 @@ export default function SignUpPage() {
                         Referral code applied! 🎉
                       </p>
                       <p className="text-xs text-purple-700 dark:text-purple-300 mt-1">
-                        You'll receive <strong>250 bonus credits</strong> when you subscribe to a paid plan.
+                        You&apos;ll receive <strong>250 bonus credits</strong> when you subscribe to a paid plan.
                       </p>
                     </div>
                   </div>
@@ -274,7 +274,7 @@ export default function SignUpPage() {
                       placeholder="••••••••"
                     />
                   </div>
-                  
+
                   {/* Password Requirements */}
                   {showPasswordRequirements && (
                     <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
@@ -328,5 +328,17 @@ export default function SignUpPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+      </div>
+    }>
+      <SignUpContent />
+    </Suspense>
   );
 }

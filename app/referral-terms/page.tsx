@@ -13,7 +13,7 @@ export default function ReferralTermsPage() {
           <Container size="md">
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-12 border border-gray-200 dark:border-gray-700">
               <h1 className="text-3xl font-bold mb-6">Terms of Service: Referrals</h1>
-              
+
               <div className="space-y-6 text-gray-600 dark:text-gray-400">
                 <section>
                   <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
@@ -78,7 +78,7 @@ export default function ReferralTermsPage() {
                     5. Credit Processing
                   </h3>
                   <ul className="list-disc pl-6 space-y-2">
-                    <li>Credits are typically awarded within 24-48 hours after a referred user's first paid subscription payment is processed.</li>
+                    <li>Credits are typically awarded within 24-48 hours after a referred user&apos;s first paid subscription payment is processed.</li>
                     <li>Jam AI reserves the right to review and verify referrals before awarding credits.</li>
                     <li>If a referred user cancels or refunds their subscription within 30 days, the credits may be revoked.</li>
                   </ul>
@@ -90,7 +90,7 @@ export default function ReferralTermsPage() {
                   </h3>
                   <ul className="list-disc pl-6 space-y-2">
                     <li>Jam AI reserves the right to modify, suspend, or terminate the referral program at any time without prior notice.</li>
-                    <li>Changes to credit amounts, eligibility requirements, or program terms may be made at Jam AI's discretion.</li>
+                    <li>Changes to credit amounts, eligibility requirements, or program terms may be made at Jam AI&apos;s discretion.</li>
                     <li>Existing earned credits will remain valid even if the program is terminated.</li>
                   </ul>
                 </section>
@@ -113,7 +113,7 @@ export default function ReferralTermsPage() {
                   </h3>
                   <ul className="list-disc pl-6 space-y-2">
                     <li>Jam AI is not responsible for any technical issues that may prevent credits from being awarded.</li>
-                    <li>The referral program is provided "as is" without any warranties or guarantees.</li>
+                    <li>The referral program is provided &quot;as is&quot; without any warranties or guarantees.</li>
                     <li>Jam AI is not liable for any damages or losses resulting from participation in the referral program.</li>
                   </ul>
                 </section>

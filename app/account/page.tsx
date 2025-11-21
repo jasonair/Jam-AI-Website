@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { downloadApp } from '@/lib/downloadApp';
 import Header from '@/components/ui/Header';
@@ -36,6 +37,59 @@ export default function AccountPage() {
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
+  const handleSyncSubscription = useCallback(async (isManual = false) => {
+    if (!user || !userProfile) return;
+
+    try {
+      setSyncLoading(true);
+      setError(null);
+      setSyncSuccess(null);
+
+      // Call simplified sync endpoint
+      const response = await fetch('/api/sync-subscription-client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userEmail: user.email,
+          userId: user.uid,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to sync subscription');
+      }
+
+      const data = await response.json();
+
+      // Update Firestore directly using client SDK
+      if (data.updateNeeded) {
+        const { doc, updateDoc } = await import('firebase/firestore');
+        const { db } = await import('@/lib/firebase');
+
+        await updateDoc(doc(db, 'users', user.uid), {
+          ...data.updateNeeded,
+          updatedAt: new Date().toISOString(),
+        });
+
+        if (isManual) {
+          setSyncSuccess(`✅ Synced to ${data.plan.toUpperCase()} plan with ${data.credits} credits`);
+        }
+        // Refresh user profile to show updated data
+        await refreshUserProfile();
+      } else if (isManual) {
+        setSyncSuccess(data.message);
+      }
+    } catch (err: any) {
+      console.error('Error syncing subscription:', err);
+      setError(err.message || 'Failed to sync subscription. Please try again.');
+    } finally {
+      setSyncLoading(false);
+    }
+  }, [user, userProfile, refreshUserProfile]);
+
   useEffect(() => {
     if (!loading && !user) {
       console.log('No user found, redirecting to signin...');
@@ -48,7 +102,7 @@ export default function AccountPage() {
       hasSynced.current = true;
       handleSyncSubscription();
     }
-  }, [user, userProfile]);
+  }, [user, userProfile, handleSyncSubscription]);
 
 
   if (loading || !userProfile) {
@@ -66,7 +120,7 @@ export default function AccountPage() {
                 </p>
                 <ul className="text-xs text-left text-yellow-700 dark:text-yellow-300 mt-2 space-y-1 ml-4">
                   <li>• Firebase credentials are set in .env.local</li>
-                  <li>• You're signed in (try signing out and back in)</li>
+                  <li>• You&apos;re signed in (try signing out and back in)</li>
                   <li>• Check the browser console for errors</li>
                 </ul>
                 <button
@@ -137,58 +191,7 @@ export default function AccountPage() {
     }
   };
 
-  const handleSyncSubscription = async (isManual = false) => {
-    if (!user || !userProfile) return;
 
-    try {
-      setSyncLoading(true);
-      setError(null);
-      setSyncSuccess(null);
-
-      // Call simplified sync endpoint
-      const response = await fetch('/api/sync-subscription-client', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userEmail: user.email,
-          userId: user.uid,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to sync subscription');
-      }
-
-      const data = await response.json();
-
-      // Update Firestore directly using client SDK
-      if (data.updateNeeded) {
-        const { doc, updateDoc } = await import('firebase/firestore');
-        const { db } = await import('@/lib/firebase');
-
-        await updateDoc(doc(db, 'users', user.uid), {
-          ...data.updateNeeded,
-          updatedAt: new Date().toISOString(),
-        });
-
-        if (isManual) {
-          setSyncSuccess(`✅ Synced to ${data.plan.toUpperCase()} plan with ${data.credits} credits`);
-        }
-        // Refresh user profile to show updated data
-        await refreshUserProfile();
-      } else if (isManual) {
-        setSyncSuccess(data.message);
-      }
-    } catch (err: any) {
-      console.error('Error syncing subscription:', err);
-      setError(err.message || 'Failed to sync subscription. Please try again.');
-    } finally {
-      setSyncLoading(false);
-    }
-  };
 
   const handleDownload = async () => {
     try {
@@ -284,9 +287,11 @@ export default function AccountPage() {
                   {/* Avatar */}
                   <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                     {userProfile.photoURL ? (
-                      <img
+                      <Image
                         src={userProfile.photoURL}
                         alt={userProfile.displayName}
+                        width={96}
+                        height={96}
                         className="w-full h-full rounded-full object-cover"
                       />
                     ) : (
@@ -388,7 +393,7 @@ export default function AccountPage() {
 
                   <div className="space-y-4 mt-4">
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      You'll be redirected to our secure billing portal where you can:
+                      You&apos;ll be redirected to our secure billing portal where you can:
                     </p>
                     <ul className="text-xs text-gray-500 dark:text-gray-400 space-y-1 ml-4">
                       <li>• Update payment methods</li>
@@ -524,8 +529,8 @@ export default function AccountPage() {
                     <div
                       key={plan.id}
                       className={`p-6 rounded-xl border-2 transition-all duration-200 flex flex-col ${plan.isCurrent
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-200 dark:border-gray-700'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                        : 'border-gray-200 dark:border-gray-700'
                         }`}
                     >
                       {/* Plan Header */}

@@ -69,13 +69,12 @@ export default function Trust() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-accent/10 rounded-full mb-6 absolute top-0 left-1/2 -translate-x-1/2">
               <Quote className="w-8 h-8 text-accent" />
             </div>
-            <div 
-              className={`transition-opacity duration-500 pt-24 ${
-                isTransitioning ? 'opacity-0' : 'opacity-100'
-              }`}
+            <div
+              className={`transition-opacity duration-500 pt-24 ${isTransitioning ? 'opacity-0' : 'opacity-100'
+                }`}
             >
               <blockquote className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-gray-100 mb-4">
-                "{testimonials[currentIndex].quote}"
+                &quot;{testimonials[currentIndex].quote}&quot;
               </blockquote>
               <p className="text-gray-600 dark:text-gray-400">
                 — {testimonials[currentIndex].author}, {testimonials[currentIndex].role}
@@ -95,11 +94,10 @@ export default function Trust() {
                     setIsTransitioning(false);
                   }, 500);
                 }}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  index === currentIndex 
-                    ? 'w-8 bg-accent' 
+                className={`h-2 rounded-full transition-all duration-300 ${index === currentIndex
+                    ? 'w-8 bg-accent'
                     : 'w-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
-                }`}
+                  }`}
                 aria-label={`Go to testimonial ${index + 1}`}
               />
             ))}

@@ -166,11 +166,10 @@ export default function PricingPage() {
             {plans.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative rounded-2xl p-8 border-2 transition-all duration-300 ${
-                  plan.popular
+                className={`relative rounded-2xl p-8 border-2 transition-all duration-300 ${plan.popular
                     ? 'border-accent bg-white dark:bg-gray-800 shadow-2xl scale-105'
                     : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-accent'
-                }`}
+                  }`}
               >
                 {/* Popular Badge */}
                 {plan.popular && (
@@ -233,12 +232,12 @@ export default function PricingPage() {
           {/* FAQ Section */}
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
-            
+
             <div className="space-y-6">
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-bold mb-2">What are credits?</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Credits are used for AI operations like generating responses, creating nodes, and expanding content. 
+                  Credits are used for AI operations like generating responses, creating nodes, and expanding content.
                   Each operation uses a different amount of credits based on complexity.
                 </p>
               </div>
@@ -246,7 +245,7 @@ export default function PricingPage() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-bold mb-2">Can I change plans later?</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Yes! You can upgrade or downgrade your plan at any time from your account settings. 
+                  Yes! You can upgrade or downgrade your plan at any time from your account settings.
                   Changes take effect immediately.
                 </p>
               </div>
@@ -254,7 +253,7 @@ export default function PricingPage() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-bold mb-2">What happens after my trial?</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  After your 7-day trial, you'll automatically move to the Free plan. 
+                  After your 7-day trial, you&apos;ll automatically move to the Free plan.
                   You can upgrade to a paid plan anytime to get more credits and features.
                 </p>
               </div>
@@ -262,7 +261,7 @@ export default function PricingPage() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-bold mb-2">Do unused credits roll over?</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Credits reset at the beginning of each billing cycle. We recommend choosing a plan 
+                  Credits reset at the beginning of each billing cycle. We recommend choosing a plan
                   that matches your typical monthly usage.
                 </p>
               </div>

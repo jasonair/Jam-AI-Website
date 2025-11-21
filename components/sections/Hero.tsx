@@ -42,59 +42,59 @@ export default function Hero() {
       <GridBackground className="min-h-screen flex items-center justify-center w-full" opacity="subtle" variant="dots">
         <section className="relative w-full">
           <Container className="relative z-10">
-        <div className="text-center space-y-8 animate-fade-in pt-16">
-          {/* Headline */}
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-balance">
-            Build your AI dream team
-            <br />
-            <span className="text-accent">in one shared space.</span>
-          </h1>
+            <div className="text-center space-y-8 animate-fade-in pt-16">
+              {/* Headline */}
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-balance">
+                Build your AI dream team
+                <br />
+                <span className="text-accent">in one shared space.</span>
+              </h1>
 
-          {/* Subheadline */}
-          <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto text-balance">
-            Name your AI specialists, choose their expertise, and chat with your whole team — all in <span className="font-bold text-blue-600 dark:text-blue-400">Jam AI</span>, one visual workspace where you can see everyone's insights at once.
-          </p>
+              {/* Subheadline */}
+              <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto text-balance">
+                Name your AI specialists, choose their expertise, and chat with your whole team — all in <span className="font-bold text-blue-600 dark:text-blue-400">Jam AI</span>, one visual workspace where you can see everyone&apos;s insights at once.
+              </p>
 
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            {!loading && (
-              <>
-                <Button 
-                  size="lg" 
-                  className="min-w-[200px]" 
-                  onClick={handleGetStarted}
-                >
-                  {user ? 'Go to Account' : 'Start for Free'}
-                </Button>
-                {!user && (
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="min-w-[200px]"
-                    onClick={() => router.push('/pricing')}
-                  >
-                    View Pricing
-                  </Button>
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+                {!loading && (
+                  <>
+                    <Button
+                      size="lg"
+                      className="min-w-[200px]"
+                      onClick={handleGetStarted}
+                    >
+                      {user ? 'Go to Account' : 'Start for Free'}
+                    </Button>
+                    {!user && (
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="min-w-[200px]"
+                        onClick={() => router.push('/pricing')}
+                      >
+                        View Pricing
+                      </Button>
+                    )}
+                    {user && (
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="min-w-[200px]"
+                        onClick={scrollToLearnMore}
+                      >
+                        Learn More <ArrowDown className="ml-2 h-5 w-5" />
+                      </Button>
+                    )}
+                  </>
                 )}
-                {user && (
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="min-w-[200px]"
-                    onClick={scrollToLearnMore}
-                  >
-                    Learn More <ArrowDown className="ml-2 h-5 w-5" />
-                  </Button>
-                )}
-              </>
-            )}
-          </div>
+              </div>
 
-          {/* Tagline */}
-          <p className="text-sm text-gray-500 dark:text-gray-500 pt-4">
-            macOS (Apple Silicon) • Built for creative thinkers
-          </p>
-        </div>
+              {/* Tagline */}
+              <p className="text-sm text-gray-500 dark:text-gray-500 pt-4">
+                macOS (Apple Silicon) • Built for creative thinkers
+              </p>
+            </div>
           </Container>
         </section>
       </GridBackground>

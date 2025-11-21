@@ -43,10 +43,10 @@ export default function SignInPage() {
         <div className="w-full md:w-1/2 bg-gradient-to-br from-blue-600 to-blue-800 text-white p-12 flex flex-col justify-center">
           <div className="max-w-md mx-auto w-full">
             <div className="mb-8">
-              <Image 
-                src="/images/jam-ai-logo-white.svg" 
-                alt="Jam AI Logo" 
-                width={64} 
+              <Image
+                src="/images/jam-ai-logo-white.svg"
+                alt="Jam AI Logo"
+                width={64}
                 height={64}
                 style={{ height: 'auto' }}
                 className="object-contain mb-6"
@@ -76,7 +76,7 @@ export default function SignInPage() {
                 </div>
               </div>
               <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link href="/auth/signup" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
                   Sign up here
                 </Link>
@@ -84,7 +84,7 @@ export default function SignInPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Right Column - Form */}
         <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-gray-900">
           <div className="w-full max-w-md">
@@ -156,7 +156,7 @@ export default function SignInPage() {
 
               {/* Sign Up Link */}
               <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link href="/auth/signup" className="text-accent hover:text-accent-hover font-medium">
                   Sign up
                 </Link>
