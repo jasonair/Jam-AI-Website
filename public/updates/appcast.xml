@@ -1,0 +1,14 @@
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Jam AI</title>
+        <item>
+            <title>0.1.1</title>
+            <pubDate>Sat, 22 Nov 2025 19:51:19 +0000</pubDate>
+            <sparkle:version>1</sparkle:version>
+            <sparkle:shortVersionString>0.1.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <enclosure url="JamAI-0.1.0.zip" length="19554804" type="application/octet-stream"/>
+        </item>
+    </channel>
+</rss>
