@@ -15,8 +15,13 @@ function RootContent({ children }: { children: React.ReactNode }) {
     // 1. Beta gate is active
     // 2. Not a special route (/admin or /auth)
     // 3. User is not authenticated (once authenticated, they have beta access)
-    // 4. Not loading (to avoid flashing beta gate during initial auth check)
-    if (isBetaGateActive && !isSpecialRoute && !user && !loading) {
+
+    // Prevent flash of content while checking auth state
+    if (isBetaGateActive && !isSpecialRoute && loading) {
+        return <div className="min-h-screen bg-white dark:bg-gray-900" />;
+    }
+
+    if (isBetaGateActive && !isSpecialRoute && !user) {
         return <BetaGate />;
     }
 
