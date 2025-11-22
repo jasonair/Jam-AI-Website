@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "release:jamai": "node scripts/release-jamai.js"
   },
   "dependencies": {
     "@stripe/stripe-js": "^8.1.0",

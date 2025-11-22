@@ -175,6 +175,34 @@ All content is stored in the component files. Update text directly in:
 - Safari (latest)
 - Edge (latest)
 
+## JamAI macOS Release via Sparkle
+
+To release a new version of the JamAI macOS app:
+
+1.  **Generate Release Artifacts**:
+    Build your macOS app and generate the Sparkle `appcast.xml` and `.zip` files.
+    (Refer to [Sparkle Documentation](https://sparkle-project.org/documentation/) for details on generating these files).
+
+2.  **Run Release Script**:
+    Use the provided script to copy the artifacts to the website's public folder and commit them.
+
+    ```bash
+    # Default: copies from ../jamai-mac/releases
+    npm run release:jamai
+
+    # Or specify a custom source directory
+    npm run release:jamai -- /path/to/your/releases
+    ```
+
+    This script will:
+    - Copy `appcast.xml` and `JamAI-*.zip` files to `public/updates/`.
+    - Stage the changes in git.
+    - Commit the changes with a release message.
+
+3.  **Deploy**:
+    Push the changes to deploy the site (e.g., to Vercel).
+    The feed will be available at `https://your-domain.com/updates/appcast.xml`.
+
 ## License
 
 © 2025 Jam AI. All rights reserved.
