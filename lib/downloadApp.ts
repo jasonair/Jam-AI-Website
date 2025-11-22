@@ -53,7 +53,7 @@ export async function getAppInfo() {
     return {
       url,
       filename: 'JamAI.dmg',
-      size: '~60 MB',
+      size: '~50 MB',
       platform: 'macOS (Apple Silicon)',
     };
   } catch (error) {
